@@ -1,0 +1,337 @@
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+/runtime.v1.RuntimeService/RunPodSandbox
+HEAD https://registry.cn-hangzhou.aliyuncs.com/v2/google_containers/pause/manifests/3.7
+HEAD https://registry.cn-hangzhou.aliyuncs.com/v2/google_containers/pause/manifests/3.7
+GET https://registry.cn-hangzhou.aliyuncs.com/v2/google_containers/pause/manifests/sha256:bb6ed397957e9ca7c65ada0db5c5d1c707c9c8afc80a94acbe69f3ae76988f0c
+GET https://registry.cn-hangzhou.aliyuncs.com/v2/google_containers/pause/manifests/sha256:bb6ed397957e9ca7c65ada0db5c5d1c707c9c8afc80a94acbe69f3ae76988f0c
+GET https://registry.cn-hangzhou.aliyuncs.com/v2/google_containers/pause/manifests/sha256:f81611a21cf91214c1ea751c5b525931a0e2ebabe62b3937b6158039ff6f922d
+GET https://registry.cn-hangzhou.aliyuncs.com/v2/google_containers/pause/blobs/sha256:221177c6082a88ea4f6240ab2450d540955ac6f4d5454f0e15751b653ebda165
+GET https://registry.cn-hangzhou.aliyuncs.com/v2/google_containers/pause/blobs/sha256:7582c2cc65ef30105b84c1c6812f71c8012663c6352b01fe2f483238313ab0ed
+mount  --rbind  /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/1/fs /var/lib/containerd/tmpmounts/containerd-mount279344913
+mount  -t tmpfs -osuid,nodev,dev,exec,nosuid,noexec  shm /run/containerd/io.containerd.grpc.v1.cri/sandboxes/af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295/shm mode=1777,size=67108864
+mount  -t none --rbind  /proc/1204241/task/1204259/ns/net /var/run/netns/cni-31816c5e-9c7c-a92a-3c17-1cbbb2120c92
+---------------- ExecPlugin Args ----------------
+bin:  /opt/cni/bin/flannel
+env:  {"CNI_ARGS":"K8S_POD_INFRA_CONTAINER_ID=af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295;K8S_POD_UID=hdishd83djaidwnduwk28bcsb;IgnoreUnknown=1;K8S_POD_NAMESPACE=default;K8S_POD_NAME=busybox-sandbox","CNI_COMMAND":"ADD","CNI_CONTAINERID":"af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295","CNI_IFNAME":"eth0","CNI_NETNS":"/var/run/netns/cni-31816c5e-9c7c-a92a-3c17-1cbbb2120c92","CNI_PATH":"/opt/cni/bin"}
+input:  {"cniVersion":"0.3.1","delegate":{"hairpinMode":true,"isDefaultGateway":true},"name":"cbr0","type":"flannel"}
+---------------- ExecPlugin Args ----------------
+bin:  /opt/cni/bin/loopback
+env:  {"CNI_ARGS":"IgnoreUnknown=1;K8S_POD_NAMESPACE=default;K8S_POD_NAME=busybox-sandbox;K8S_POD_INFRA_CONTAINER_ID=af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295;K8S_POD_UID=hdishd83djaidwnduwk28bcsb","CNI_COMMAND":"ADD","CNI_CONTAINERID":"af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295","CNI_IFNAME":"lo","CNI_NETNS":"/var/run/netns/cni-31816c5e-9c7c-a92a-3c17-1cbbb2120c92","CNI_PATH":"/opt/cni/bin"}
+input:  {"cniVersion":"0.3.1","name":"cni-loopback","type":"loopback"}
+---------------- ExecPlugin Result ----------------
+stdout:  {
+    "cniVersion": "0.3.1",
+    "interfaces": [
+        {
+            "name": "lo",
+            "mac": "00:00:00:00:00:00",
+            "sandbox": "/var/run/netns/cni-31816c5e-9c7c-a92a-3c17-1cbbb2120c92"
+        }
+    ],
+    "ips": [
+        {
+            "interface": 0,
+            "address": "127.0.0.1/8"
+        },
+        {
+            "interface": 0,
+            "address": "::1/128"
+        }
+    ],
+    "dns": {}
+}
+stderr:
+---------------- ExecPlugin Result ----------------
+stdout:  {
+    "cniVersion": "0.3.1",
+    "interfaces": [
+        {
+            "name": "cni0",
+            "mac": "82:04:41:f7:c2:71"
+        },
+        {
+            "name": "veth00b290a8",
+            "mac": "ea:fc:74:e1:8e:5a"
+        },
+        {
+            "name": "eth0",
+            "mac": "0a:f5:42:8a:8e:d2",
+            "sandbox": "/var/run/netns/cni-31816c5e-9c7c-a92a-3c17-1cbbb2120c92"
+        }
+    ],
+    "ips": [
+        {
+            "version": "4",
+            "interface": 2,
+            "address": "100.64.0.2/24",
+            "gateway": "100.64.0.1"
+        }
+    ],
+    "routes": [
+        {
+            "dst": "100.64.0.0/16"
+        },
+        {
+            "dst": "0.0.0.0/0",
+            "gw": "100.64.0.1"
+        }
+    ],
+    "dns": {}
+}
+stderr:
+map[string]interface {}{"cniVersion":"0.3.1", "hairpinMode":true, "ipMasq":false, "ipam":map[string]interface {}{"ranges":[][]map[string]interface {}{[]map[string]interface {}{map[string]interface {}{"subnet":"100.64.0.0/24"}}}, "routes":[]types.Route{types.Route{Dst:net.IPNet{IP:net.IP{0x64, 0x40, 0x0, 0x0}, Mask:net.IPMask{0xff, 0xff, 0x0, 0x0}}, GW:net.IP(nil)}}, "type":"host-local"}, "isDefaultGateway":true, "isGateway":true, "mtu":(*uint)(0xc0000128e0), "name":"cbr0", "type":"bridge"}
+delegateAdd: netconf sent to delegate plugin:
+{"cniVersion":"0.3.1","hairpinMode":true,"ipMasq":false,"ipam":{"ranges":[[{"subnet":"100.64.0.0/24"}]],"routes":[{"dst":"100.64.0.0/16"}],"type":"host-local"},"isDefaultGateway":true,"isGateway":true,"mtu":1450,"name":"cbr0","type":"bridge"}
+---------------- ExecPlugin Args ----------------
+bin:  /opt/cni/bin/portmap
+env:  {"CNI_ARGS":"K8S_POD_INFRA_CONTAINER_ID=af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295;K8S_POD_UID=hdishd83djaidwnduwk28bcsb;IgnoreUnknown=1;K8S_POD_NAMESPACE=default;K8S_POD_NAME=busybox-sandbox","CNI_COMMAND":"ADD","CNI_CONTAINERID":"af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295","CNI_IFNAME":"eth0","CNI_NETNS":"/var/run/netns/cni-31816c5e-9c7c-a92a-3c17-1cbbb2120c92","CNI_PATH":"/opt/cni/bin"}
+input:  {"capabilities":{"portMappings":true},"cniVersion":"0.3.1","name":"cbr0","prevResult":{"cniVersion":"0.3.1","interfaces":[{"name":"cni0","mac":"82:04:41:f7:c2:71"},{"name":"veth00b290a8","mac":"ea:fc:74:e1:8e:5a"},{"name":"eth0","mac":"0a:f5:42:8a:8e:d2","sandbox":"/var/run/netns/cni-31816c5e-9c7c-a92a-3c17-1cbbb2120c92"}],"ips":[{"version":"4","interface":2,"address":"100.64.0.2/24","gateway":"100.64.0.1"}],"routes":[{"dst":"100.64.0.0/16"},{"dst":"0.0.0.0/0","gw":"100.64.0.1"}],"dns":{}},"type":"portmap"}
+---------------- ExecPlugin Result ----------------
+stdout:  {
+    "cniVersion": "0.3.1",
+    "interfaces": [
+        {
+            "name": "cni0",
+            "mac": "82:04:41:f7:c2:71"
+        },
+        {
+            "name": "veth00b290a8",
+            "mac": "ea:fc:74:e1:8e:5a"
+        },
+        {
+            "name": "eth0",
+            "mac": "0a:f5:42:8a:8e:d2",
+            "sandbox": "/var/run/netns/cni-31816c5e-9c7c-a92a-3c17-1cbbb2120c92"
+        }
+    ],
+    "ips": [
+        {
+            "version": "4",
+            "interface": 2,
+            "address": "100.64.0.2/24",
+            "gateway": "100.64.0.1"
+        }
+    ],
+    "routes": [
+        {
+            "dst": "100.64.0.0/16"
+        },
+        {
+            "dst": "0.0.0.0/0",
+            "gw": "100.64.0.1"
+        }
+    ],
+    "dns": {}
+}
+stderr:
+---------->ENV:  {"GOMAXPROCS":"2","GRPC_ADDRESS":"/run/containerd/containerd.sock","MAX_SHIM_VERSION":"2","NAMESPACE":"k8s.io","TTRPC_ADDRESS":"/run/containerd/containerd.sock.ttrpc"}
+---------->Args:  [/Users/acejilam/Desktop/containerd/containerd-shim-runc-v2 -namespace k8s.io -address /run/containerd/containerd.sock -publish-binary /Users/acejilam/Desktop/containerd/containerd_bin -id af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295 start]
+---------->Path:  /Users/acejilam/Desktop/containerd/containerd-shim-runc-v2
+---------->Process:  <nil>
+---------->Dir:  /run/containerd/io.containerd.runtime.v2.task/k8s.io/af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295
+❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️
+time="2024-06-19T17:09:25.735447571+08:00" level=info msg="loading plugin \"io.containerd.event.v1.publisher\"..." runtime=io.containerd.runc.v2 type=io.containerd.event.v1
+time="2024-06-19T17:09:25.736156755+08:00" level=info msg="loading plugin \"io.containerd.internal.v1.shutdown\"..." runtime=io.containerd.runc.v2 type=io.containerd.internal.v1
+time="2024-06-19T17:09:25.736180688+08:00" level=info msg="loading plugin \"io.containerd.ttrpc.v1.task\"..." runtime=io.containerd.runc.v2 type=io.containerd.ttrpc.v1
+time="2024-06-19T17:09:25.736266959+08:00" level=info msg="loading plugin \"io.containerd.ttrpc.v1.pause\"..." runtime=io.containerd.runc.v2 type=io.containerd.ttrpc.v1
+time="2024-06-19T17:09:25.737677306+08:00" level=error msg="========> runc  ENV:  {}" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.737723666+08:00" level=error msg="========> runc  Args:  [runc --root /run/containerd/runc/k8s.io --log /run/containerd/io.containerd.runtime.v2.task/k8s.io/af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295/log.json --log-format json create --bundle /run/containerd/io.containerd.runtime.v2.task/k8s.io/af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295 --pid-file /run/containerd/io.containerd.runtime.v2.task/k8s.io/af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295/init.pid af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295]" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.737737228+08:00" level=error msg="========> runc  Path:  /usr/bin/runc" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.737743045+08:00" level=error msg="========> runc  Process:  <nil>" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.737746689+08:00" level=error msg="========> runc  Dir:  " runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.737773819+08:00" level=error msg="========> runc init ENV:  {}" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.737781312+08:00" level=error msg="========> runc init Args:  [runc --root /run/containerd/runc/k8s.io --log /run/containerd/io.containerd.runtime.v2.task/k8s.io/af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295/log.json --log-format json create --bundle /run/containerd/io.containerd.runtime.v2.task/k8s.io/af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295 --pid-file /run/containerd/io.containerd.runtime.v2.task/k8s.io/af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295/init.pid af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295]" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.737788206+08:00" level=error msg="========> runc init Path:  /usr/bin/runc" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.737791859+08:00" level=error msg="========> runc init Process:  <nil>" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.737795560+08:00" level=error msg="========> runc init Dir:  " runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.823058715+08:00" level=error msg="========> runc  ENV:  {}" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.823093394+08:00" level=error msg="========> runc  Args:  [runc --root /run/containerd/runc/k8s.io --log /run/containerd/io.containerd.runtime.v2.task/k8s.io/af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295/log.json --log-format json start af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295]" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.823119078+08:00" level=error msg="========> runc  Path:  /usr/bin/runc" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.823129063+08:00" level=error msg="========> runc  Process:  <nil>" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:25.823152105+08:00" level=error msg="========> runc  Dir:  " runtime=io.containerd.runc.v2 type=runc
+{
+    "Method": "/runtime.v1.RuntimeService/RunPodSandbox",
+    "Path": "new(instrument.InstrumentedService).RunPodSandbox",
+    "Request": {
+        "config": {
+            "metadata": {
+                "name": "busybox-sandbox",
+                "uid": "hdishd83djaidwnduwk28bcsb",
+                "namespace": "default",
+                "attempt": 1
+            },
+            "log_directory": "/tmp",
+            "annotations": {
+                "kubernetes.io/egress-bandwidth": "100M",
+                "kubernetes.io/ingress-bandwidth": "100M"
+            },
+            "linux": {}
+        }
+    },
+    "Response": {
+        "pod_sandbox_id": "af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295"
+    },
+    "Error": "",
+    "FullError": null
+}
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+/runtime.v1.RuntimeService/RunPodSandbox
+mount  -t tmpfs -onoexec,nodev,nosuid,suid,dev,exec  shm /run/containerd/io.containerd.grpc.v1.cri/sandboxes/10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b/shm mode=1777,size=67108864
+mount  -t none --rbind  /proc/1204241/task/1204251/ns/net /var/run/netns/cni-4498c5a0-41f2-04a6-8e5e-80f8825c6ec7
+---------------- ExecPlugin Args ----------------
+bin:  /opt/cni/bin/flannel
+env:  {"CNI_ARGS":"IgnoreUnknown=1;K8S_POD_NAMESPACE=;K8S_POD_NAME=busybox;K8S_POD_INFRA_CONTAINER_ID=10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b;K8S_POD_UID=","CNI_COMMAND":"ADD","CNI_CONTAINERID":"10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b","CNI_IFNAME":"eth0","CNI_NETNS":"/var/run/netns/cni-4498c5a0-41f2-04a6-8e5e-80f8825c6ec7","CNI_PATH":"/opt/cni/bin"}
+input:  {"cniVersion":"0.3.1","delegate":{"hairpinMode":true,"isDefaultGateway":true},"name":"cbr0","type":"flannel"}
+---------------- ExecPlugin Args ----------------
+bin:  /opt/cni/bin/loopback
+env:  {"CNI_ARGS":"IgnoreUnknown=1;K8S_POD_NAMESPACE=;K8S_POD_NAME=busybox;K8S_POD_INFRA_CONTAINER_ID=10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b;K8S_POD_UID=","CNI_COMMAND":"ADD","CNI_CONTAINERID":"10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b","CNI_IFNAME":"lo","CNI_NETNS":"/var/run/netns/cni-4498c5a0-41f2-04a6-8e5e-80f8825c6ec7","CNI_PATH":"/opt/cni/bin"}
+input:  {"cniVersion":"0.3.1","name":"cni-loopback","type":"loopback"}
+---------------- ExecPlugin Result ----------------
+stdout:  {
+    "cniVersion": "0.3.1",
+    "interfaces": [
+        {
+            "name": "lo",
+            "mac": "00:00:00:00:00:00",
+            "sandbox": "/var/run/netns/cni-4498c5a0-41f2-04a6-8e5e-80f8825c6ec7"
+        }
+    ],
+    "ips": [
+        {
+            "interface": 0,
+            "address": "127.0.0.1/8"
+        },
+        {
+            "interface": 0,
+            "address": "::1/128"
+        }
+    ],
+    "dns": {}
+}
+stderr:
+---------------- ExecPlugin Result ----------------
+stdout:  {
+    "cniVersion": "0.3.1",
+    "interfaces": [
+        {
+            "name": "cni0",
+            "mac": "82:04:41:f7:c2:71"
+        },
+        {
+            "name": "veth9563731b",
+            "mac": "fe:d8:1d:91:26:56"
+        },
+        {
+            "name": "eth0",
+            "mac": "66:bf:97:17:64:80",
+            "sandbox": "/var/run/netns/cni-4498c5a0-41f2-04a6-8e5e-80f8825c6ec7"
+        }
+    ],
+    "ips": [
+        {
+            "version": "4",
+            "interface": 2,
+            "address": "100.64.0.3/24",
+            "gateway": "100.64.0.1"
+        }
+    ],
+    "routes": [
+        {
+            "dst": "100.64.0.0/16"
+        },
+        {
+            "dst": "0.0.0.0/0",
+            "gw": "100.64.0.1"
+        }
+    ],
+    "dns": {}
+}
+stderr:
+map[string]interface {}{"cniVersion":"0.3.1", "hairpinMode":true, "ipMasq":false, "ipam":map[string]interface {}{"ranges":[][]map[string]interface {}{[]map[string]interface {}{map[string]interface {}{"subnet":"100.64.0.0/24"}}}, "routes":[]types.Route{types.Route{Dst:net.IPNet{IP:net.IP{0x64, 0x40, 0x0, 0x0}, Mask:net.IPMask{0xff, 0xff, 0x0, 0x0}}, GW:net.IP(nil)}}, "type":"host-local"}, "isDefaultGateway":true, "isGateway":true, "mtu":(*uint)(0xc000186700), "name":"cbr0", "type":"bridge"}
+delegateAdd: netconf sent to delegate plugin:
+{"cniVersion":"0.3.1","hairpinMode":true,"ipMasq":false,"ipam":{"ranges":[[{"subnet":"100.64.0.0/24"}]],"routes":[{"dst":"100.64.0.0/16"}],"type":"host-local"},"isDefaultGateway":true,"isGateway":true,"mtu":1450,"name":"cbr0","type":"bridge"}
+---------------- ExecPlugin Args ----------------
+bin:  /opt/cni/bin/portmap
+env:  {"CNI_ARGS":"IgnoreUnknown=1;K8S_POD_NAMESPACE=;K8S_POD_NAME=busybox;K8S_POD_INFRA_CONTAINER_ID=10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b;K8S_POD_UID=","CNI_COMMAND":"ADD","CNI_CONTAINERID":"10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b","CNI_IFNAME":"eth0","CNI_NETNS":"/var/run/netns/cni-4498c5a0-41f2-04a6-8e5e-80f8825c6ec7","CNI_PATH":"/opt/cni/bin"}
+input:  {"capabilities":{"portMappings":true},"cniVersion":"0.3.1","name":"cbr0","prevResult":{"cniVersion":"0.3.1","interfaces":[{"name":"cni0","mac":"82:04:41:f7:c2:71"},{"name":"veth9563731b","mac":"fe:d8:1d:91:26:56"},{"name":"eth0","mac":"66:bf:97:17:64:80","sandbox":"/var/run/netns/cni-4498c5a0-41f2-04a6-8e5e-80f8825c6ec7"}],"ips":[{"version":"4","interface":2,"address":"100.64.0.3/24","gateway":"100.64.0.1"}],"routes":[{"dst":"100.64.0.0/16"},{"dst":"0.0.0.0/0","gw":"100.64.0.1"}],"dns":{}},"type":"portmap"}
+---------------- ExecPlugin Result ----------------
+stdout:  {
+    "cniVersion": "0.3.1",
+    "interfaces": [
+        {
+            "name": "cni0",
+            "mac": "82:04:41:f7:c2:71"
+        },
+        {
+            "name": "veth9563731b",
+            "mac": "fe:d8:1d:91:26:56"
+        },
+        {
+            "name": "eth0",
+            "mac": "66:bf:97:17:64:80",
+            "sandbox": "/var/run/netns/cni-4498c5a0-41f2-04a6-8e5e-80f8825c6ec7"
+        }
+    ],
+    "ips": [
+        {
+            "version": "4",
+            "interface": 2,
+            "address": "100.64.0.3/24",
+            "gateway": "100.64.0.1"
+        }
+    ],
+    "routes": [
+        {
+            "dst": "100.64.0.0/16"
+        },
+        {
+            "dst": "0.0.0.0/0",
+            "gw": "100.64.0.1"
+        }
+    ],
+    "dns": {}
+}
+stderr:
+---------->ENV:  {"GOMAXPROCS":"2","GRPC_ADDRESS":"/run/containerd/containerd.sock","MAX_SHIM_VERSION":"2","NAMESPACE":"k8s.io","TTRPC_ADDRESS":"/run/containerd/containerd.sock.ttrpc"}
+---------->Args:  [/Users/acejilam/Desktop/containerd/containerd-shim-runc-v2 -namespace k8s.io -address /run/containerd/containerd.sock -publish-binary /Users/acejilam/Desktop/containerd/containerd_bin -id 10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b start]
+---------->Path:  /Users/acejilam/Desktop/containerd/containerd-shim-runc-v2
+---------->Process:  <nil>
+---------->Dir:  /run/containerd/io.containerd.runtime.v2.task/k8s.io/10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b
+❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️❇️
+time="2024-06-19T17:09:34.368744945+08:00" level=info msg="loading plugin \"io.containerd.event.v1.publisher\"..." runtime=io.containerd.runc.v2 type=io.containerd.event.v1
+time="2024-06-19T17:09:34.368913471+08:00" level=info msg="loading plugin \"io.containerd.internal.v1.shutdown\"..." runtime=io.containerd.runc.v2 type=io.containerd.internal.v1
+time="2024-06-19T17:09:34.368959799+08:00" level=info msg="loading plugin \"io.containerd.ttrpc.v1.task\"..." runtime=io.containerd.runc.v2 type=io.containerd.ttrpc.v1
+time="2024-06-19T17:09:34.369091260+08:00" level=info msg="loading plugin \"io.containerd.ttrpc.v1.pause\"..." runtime=io.containerd.runc.v2 type=io.containerd.ttrpc.v1
+time="2024-06-19T17:09:34.371671085+08:00" level=error msg="========> runc  ENV:  {}" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.371743283+08:00" level=error msg="========> runc  Args:  [runc --root /run/containerd/runc/k8s.io --log /run/containerd/io.containerd.runtime.v2.task/k8s.io/10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b/log.json --log-format json create --bundle /run/containerd/io.containerd.runtime.v2.task/k8s.io/10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b --pid-file /run/containerd/io.containerd.runtime.v2.task/k8s.io/10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b/init.pid 10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b]" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.371764572+08:00" level=error msg="========> runc  Path:  /usr/bin/runc" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.371797023+08:00" level=error msg="========> runc  Process:  <nil>" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.371808781+08:00" level=error msg="========> runc  Dir:  " runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.371874160+08:00" level=error msg="========> runc init ENV:  {}" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.371889015+08:00" level=error msg="========> runc init Args:  [runc --root /run/containerd/runc/k8s.io --log /run/containerd/io.containerd.runtime.v2.task/k8s.io/10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b/log.json --log-format json create --bundle /run/containerd/io.containerd.runtime.v2.task/k8s.io/10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b --pid-file /run/containerd/io.containerd.runtime.v2.task/k8s.io/10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b/init.pid 10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b]" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.371901955+08:00" level=error msg="========> runc init Path:  /usr/bin/runc" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.371906592+08:00" level=error msg="========> runc init Process:  <nil>" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.371910592+08:00" level=error msg="========> runc init Dir:  " runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.430779693+08:00" level=error msg="========> runc  ENV:  {}" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.430825810+08:00" level=error msg="========> runc  Args:  [runc --root /run/containerd/runc/k8s.io --log /run/containerd/io.containerd.runtime.v2.task/k8s.io/10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b/log.json --log-format json start 10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b]" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.431109168+08:00" level=error msg="========> runc  Path:  /usr/bin/runc" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.431139328+08:00" level=error msg="========> runc  Process:  <nil>" runtime=io.containerd.runc.v2 type=runc
+time="2024-06-19T17:09:34.431149202+08:00" level=error msg="========> runc  Dir:  " runtime=io.containerd.runc.v2 type=runc
+{
+    "Method": "/runtime.v1.RuntimeService/RunPodSandbox",
+    "Path": "new(instrument.InstrumentedService).RunPodSandbox",
+    "Request": {
+        "config": {
+            "metadata": {
+                "name": "busybox"
+            },
+            "linux": {}
+        }
+    },
+    "Response": {
+        "pod_sandbox_id": "10278dd7c778d37db0cd8e1adec31b803c2dc24f55951fd0735939e2280ffc3b"
+    },
+    "Error": "",
+    "FullError": null
+}
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅

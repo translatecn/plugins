@@ -33,6 +33,15 @@ func generateConfig(cniVersion string) *strings.Reader {
 	return strings.NewReader(fmt.Sprintf(`{ "name": "loopback-test", "cniVersion": "%s" }`, cniVersion))
 }
 
+// {
+//    "CNI_ARGS": "IgnoreUnknown=1;K8S_POD_NAMESPACE=default;K8S_POD_NAME=busybox-sandbox;K8S_POD_INFRA_CONTAINER_ID=af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295;K8S_POD_UID=hdishd83djaidwnduwk28bcsb",
+//    "CNI_COMMAND": "ADD",
+//    "CNI_CONTAINERID": "af04ec3cd3442da8231f5812fa6bd3620096b55afbea583f1b269a322e497295",
+//    "CNI_IFNAME": "lo",
+//    "CNI_NETNS": "/var/run/netns/cni-31816c5e-9c7c-a92a-3c17-1cbbb2120c92",
+//    "CNI_PATH": "/opt/cni/bin"
+//}
+
 var _ = Describe("Loopback", func() {
 	var (
 		networkNS ns.NetNS
