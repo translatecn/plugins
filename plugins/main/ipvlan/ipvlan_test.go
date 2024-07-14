@@ -17,6 +17,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
+	over2 "github.com/containernetworking/plugins/plugins/ipam/over/host-local/backend/allocator"
 	"net"
 	"os"
 	"strings"
@@ -26,14 +28,13 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	types020 "github.com/containernetworking/cni/pkg/types/020"
-	types040 "github.com/containernetworking/cni/pkg/types/040"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	types020 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/020"
+	types040 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/040"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
-	"github.com/containernetworking/plugins/plugins/ipam/host-local/backend/allocator"
 )
 
 const (
@@ -47,7 +48,7 @@ type Net struct {
 	Type          string                 `json:"type,omitempty"`
 	Master        string                 `json:"master"`
 	Mode          string                 `json:"mode"`
-	IPAM          *allocator.IPAMConfig  `json:"ipam"`
+	IPAM          *over2.IPAMConfig      `json:"ipam"`
 	DNS           types.DNS              `json:"dns"`
 	RawPrevResult map[string]interface{} `json:"prevResult,omitempty"`
 	PrevResult    types100.Result        `json:"-"`
@@ -71,7 +72,7 @@ func buildOneConfig(cniVersion string, master string, orig *Net, prevResult type
 		"cniVersion": orig.CNIVersion,
 	}
 	// Add previous plugin result
-	if prevResult != nil && testutils.SpecVersionHasChaining(cniVersion) {
+	if prevResult != nil && over.SpecVersionHasChaining(cniVersion) {
 		inject["prevResult"] = prevResult
 	}
 	if master != "" {
@@ -114,7 +115,7 @@ func ipvlanAddCheckDelTest(conf, masterName string, originalNS, targetNS ns.NetN
 	err = originalNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		result, _, err = testutils.CmdAddWithArgs(args, func() error {
+		result, _, err = over.CmdAddWithArgs(args, func() error {
 			return cmdAdd(args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -151,7 +152,7 @@ func ipvlanAddCheckDelTest(conf, masterName string, originalNS, targetNS ns.NetN
 	Expect(err).NotTo(HaveOccurred())
 
 	if n.IPAM != nil {
-		n.IPAM, _, err = allocator.LoadIPAMConfig([]byte(conf), "")
+		n.IPAM, _, err = over2.LoadIPAMConfig([]byte(conf), "")
 		Expect(err).NotTo(HaveOccurred())
 	}
 
@@ -164,12 +165,12 @@ func ipvlanAddCheckDelTest(conf, masterName string, originalNS, targetNS ns.NetN
 	args.StdinData = confBytes
 	GinkgoT().Logf(string(confBytes))
 
-	if testutils.SpecVersionHasCHECK(cniVersion) {
+	if over.SpecVersionHasCHECK(cniVersion) {
 		// CNI Check on ipvlan in the target namespace
 		err = originalNS.Do(func(ns.NetNS) error {
 			defer GinkgoRecover()
 
-			return testutils.CmdCheckWithArgs(args, func() error {
+			return over.CmdCheckWithArgs(args, func() error {
 				return cmdCheck(args)
 			})
 		})
@@ -179,7 +180,7 @@ func ipvlanAddCheckDelTest(conf, masterName string, originalNS, targetNS ns.NetN
 	err = originalNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		err = testutils.CmdDelWithArgs(args, func() error {
+		err = over.CmdDelWithArgs(args, func() error {
 			return cmdDel(args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -385,7 +386,7 @@ var _ = Describe("ipvlan Operations", func() {
 				ipvlanAddCheckDelTest(conf, "", originalNS, targetNS)
 			})
 
-			if testutils.SpecVersionHasChaining(ver) {
+			if over.SpecVersionHasChaining(ver) {
 				It(fmt.Sprintf("[%s] configures and deconfigures an iplvan link with ADD/DEL when chained", ver), func() {
 					conf := fmt.Sprintf(`{
 				    "cniVersion": "%s",
@@ -438,7 +439,7 @@ var _ = Describe("ipvlan Operations", func() {
 				err := originalNS.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
 
-					err := testutils.CmdDelWithArgs(args, func() error {
+					err := over.CmdDelWithArgs(args, func() error {
 						return cmdDel(args)
 					})
 					Expect(err).NotTo(HaveOccurred())

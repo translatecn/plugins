@@ -24,10 +24,10 @@ import (
 	"github.com/alexflint/go-filemutex"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	current "github.com/containernetworking/cni/pkg/types/100"
-	"github.com/containernetworking/cni/pkg/version"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/version"
 	"github.com/containernetworking/plugins/pkg/ns"
 	bv "github.com/containernetworking/plugins/pkg/utils/buildversion"
 )
@@ -361,7 +361,7 @@ func tidyRules(iface string) error {
 	if err != nil {
 		// If interface is not found by any reason it's safe to ignore an error. Also, we don't need to raise an error
 		// during cmdDel call according to CNI spec:
-		// https://github.com/containernetworking/cni/blob/main/SPEC.md#del-remove-container-from-network-or-un-apply-modifications
+		// https://github.com/containernetworking/plugins/3rd/containernetworking/cni/blob/main/SPEC.md#del-remove-container-from-network-or-un-apply-modifications
 		_, notFound := err.(netlink.LinkNotFoundError)
 		if notFound {
 			return nil

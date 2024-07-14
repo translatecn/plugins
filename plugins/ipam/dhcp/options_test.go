@@ -21,7 +21,7 @@ import (
 
 	"github.com/d2g/dhcp4"
 
-	"github.com/containernetworking/cni/pkg/types"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
 )
 
 func validateRoutes(t *testing.T, routes []*types.Route) {

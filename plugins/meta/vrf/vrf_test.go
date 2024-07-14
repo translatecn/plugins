@@ -17,6 +17,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"net"
 	"strings"
 
@@ -24,9 +25,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	current "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -134,7 +135,7 @@ var _ = Describe("vrf plugin", func() {
 		err := originalNS.Do(func(ns.NetNS) error {
 			defer GinkgoRecover()
 
-			r, _, err := testutils.CmdAddWithArgs(args, func() error {
+			r, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -163,7 +164,7 @@ var _ = Describe("vrf plugin", func() {
 
 		err := originalNS.Do(func(ns.NetNS) error {
 			defer GinkgoRecover()
-			_, _, err := testutils.CmdAddWithArgs(args, func() error {
+			_, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -250,7 +251,7 @@ var _ = Describe("vrf plugin", func() {
 
 		err := originalNS.Do(func(ns.NetNS) error {
 			defer GinkgoRecover()
-			r, _, err := testutils.CmdAddWithArgs(args, func() error {
+			r, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -406,7 +407,7 @@ var _ = Describe("vrf plugin", func() {
 					IfName:      IF1Name,
 					StdinData:   conf1,
 				}
-				_, _, err := testutils.CmdAddWithArgs(args, func() error {
+				_, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -460,7 +461,7 @@ var _ = Describe("vrf plugin", func() {
 
 		err := originalNS.Do(func(ns.NetNS) error {
 			defer GinkgoRecover()
-			_, _, err := testutils.CmdAddWithArgs(args, func() error {
+			_, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).To(HaveOccurred())
@@ -502,7 +503,7 @@ var _ = Describe("vrf plugin", func() {
 						IfName:      IF0Name,
 						StdinData:   conf0,
 					}
-					_, _, err := testutils.CmdAddWithArgs(args, func() error {
+					_, _, err := over.CmdAddWithArgs(args, func() error {
 						return cmdAdd(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
@@ -532,7 +533,7 @@ var _ = Describe("vrf plugin", func() {
 						IfName:      IF1Name,
 						StdinData:   conf1,
 					}
-					_, _, err := testutils.CmdAddWithArgs(args, func() error {
+					_, _, err := over.CmdAddWithArgs(args, func() error {
 						return cmdAdd(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
@@ -619,7 +620,7 @@ var _ = Describe("vrf plugin", func() {
 						IfName:      IF0Name,
 						StdinData:   conf0,
 					}
-					_, _, err := testutils.CmdAddWithArgs(args, func() error {
+					_, _, err := over.CmdAddWithArgs(args, func() error {
 						return cmdAdd(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
@@ -650,7 +651,7 @@ var _ = Describe("vrf plugin", func() {
 						IfName:      IF1Name,
 						StdinData:   conf1,
 					}
-					_, _, err := testutils.CmdAddWithArgs(args, func() error {
+					_, _, err := over.CmdAddWithArgs(args, func() error {
 						return cmdAdd(args)
 					})
 					return err
@@ -681,7 +682,7 @@ var _ = Describe("vrf plugin", func() {
 					IfName:      IF0Name,
 					StdinData:   conf0,
 				}
-				_, _, err := testutils.CmdAddWithArgs(args, func() error {
+				_, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -692,7 +693,7 @@ var _ = Describe("vrf plugin", func() {
 					IfName:      IF1Name,
 					StdinData:   conf1,
 				}
-				_, _, err = testutils.CmdAddWithArgs(args, func() error {
+				_, _, err = over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -719,7 +720,7 @@ var _ = Describe("vrf plugin", func() {
 					IfName:      IF0Name,
 					StdinData:   conf0,
 				}
-				err := testutils.CmdDelWithArgs(args, func() error {
+				err := over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -754,7 +755,7 @@ var _ = Describe("vrf plugin", func() {
 					IfName:      IF1Name,
 					StdinData:   conf1,
 				}
-				err := testutils.CmdDelWithArgs(args, func() error {
+				err := over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -813,7 +814,7 @@ var _ = Describe("vrf plugin", func() {
 		err := originalNS.Do(func(ns.NetNS) error {
 			defer GinkgoRecover()
 
-			prevRes, _, err := testutils.CmdAddWithArgs(args, func() error {
+			prevRes, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -845,12 +846,12 @@ var _ = Describe("vrf plugin", func() {
 
 			args.StdinData = confString
 
-			err = testutils.CmdCheckWithArgs(args, func() error {
+			err = over.CmdCheckWithArgs(args, func() error {
 				return cmdCheck(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			err = testutils.CmdDel(originalNS.Path(),
+			err = over.CmdDel(originalNS.Path(),
 				args.ContainerID, "", func() error { return cmdDel(args) })
 			Expect(err).NotTo(HaveOccurred())
 

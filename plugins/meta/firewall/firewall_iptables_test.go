@@ -17,6 +17,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"strings"
 
 	"github.com/coreos/go-iptables/iptables"
@@ -24,11 +25,11 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	types040 "github.com/containernetworking/cni/pkg/types/040"
-	current "github.com/containernetworking/cni/pkg/types/100"
-	"github.com/containernetworking/cni/pkg/version"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	types040 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/040"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/version"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -245,7 +246,7 @@ var _ = Describe("firewall plugin iptables backend", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAdd(targetNS.Path(), args.ContainerID, IFNAME, fullConf, func() error {
+				r, _, err := over.CmdAdd(targetNS.Path(), args.ContainerID, IFNAME, fullConf, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -275,7 +276,7 @@ var _ = Describe("firewall plugin iptables backend", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				_, _, err := testutils.CmdAdd(targetNS.Path(), args.ContainerID, IFNAME, fullConf, func() error {
+				_, _, err := over.CmdAdd(targetNS.Path(), args.ContainerID, IFNAME, fullConf, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -283,7 +284,7 @@ var _ = Describe("firewall plugin iptables backend", func() {
 				validateFullRuleset(fullConf)
 
 				// ensure creation is idempotent
-				_, _, err = testutils.CmdAdd(targetNS.Path(), args.ContainerID, IFNAME, fullConf, func() error {
+				_, _, err = over.CmdAdd(targetNS.Path(), args.ContainerID, IFNAME, fullConf, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -331,7 +332,7 @@ var _ = Describe("firewall plugin iptables backend", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				_, _, err := testutils.CmdAdd(targetNS.Path(), args.ContainerID, IFNAME, conf, func() error {
+				_, _, err := over.CmdAdd(targetNS.Path(), args.ContainerID, IFNAME, conf, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -370,7 +371,7 @@ var _ = Describe("firewall plugin iptables backend", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -378,15 +379,15 @@ var _ = Describe("firewall plugin iptables backend", func() {
 				_, err = types040.GetResult(r)
 				Expect(err).NotTo(HaveOccurred())
 
-				if testutils.SpecVersionHasCHECK(ver) {
-					err = testutils.CmdCheckWithArgs(args, func() error {
+				if over.SpecVersionHasCHECK(ver) {
+					err = over.CmdCheckWithArgs(args, func() error {
 						return cmdCheck(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
 					validateFullRuleset(fullConf)
 				}
 
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())

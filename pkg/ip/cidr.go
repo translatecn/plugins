@@ -19,17 +19,6 @@ import (
 	"net"
 )
 
-// NextIP returns IP incremented by 1, if IP is invalid, return nil
-func NextIP(ip net.IP) net.IP {
-	normalizedIP := normalizeIP(ip)
-	if normalizedIP == nil {
-		return nil
-	}
-
-	i := ipToInt(normalizedIP)
-	return intToIP(i.Add(i, big.NewInt(1)), len(normalizedIP) == net.IPv6len)
-}
-
 // PrevIP returns IP decremented by 1, if IP is invalid, return nil
 func PrevIP(ip net.IP) net.IP {
 	normalizedIP := normalizeIP(ip)
@@ -55,24 +44,6 @@ func Cmp(a, b net.IP) int {
 	}
 
 	return -2
-}
-
-func ipToInt(ip net.IP) *big.Int {
-	return big.NewInt(0).SetBytes(ip)
-}
-
-func intToIP(i *big.Int, isIPv6 bool) net.IP {
-	intBytes := i.Bytes()
-
-	if len(intBytes) == net.IPv4len || len(intBytes) == net.IPv6len {
-		return intBytes
-	}
-
-	if isIPv6 {
-		return append(make([]byte, net.IPv6len-len(intBytes)), intBytes...)
-	}
-
-	return append(make([]byte, net.IPv4len-len(intBytes)), intBytes...)
 }
 
 // normalizeIP will normalize IP by family,
@@ -102,4 +73,32 @@ func Network(ipn *net.IPNet) *net.IPNet {
 		IP:   maskedIP,
 		Mask: ipn.Mask,
 	}
+}
+
+// NextIP returns IP incremented by 1, if IP is invalid, return nil
+func NextIP(ip net.IP) net.IP {
+	normalizedIP := normalizeIP(ip)
+	if normalizedIP == nil {
+		return nil
+	}
+
+	i := ipToInt(normalizedIP)
+	return intToIP(i.Add(i, big.NewInt(1)), len(normalizedIP) == net.IPv6len)
+}
+
+func ipToInt(ip net.IP) *big.Int {
+	return big.NewInt(0).SetBytes(ip)
+}
+func intToIP(i *big.Int, isIPv6 bool) net.IP {
+	intBytes := i.Bytes()
+
+	if len(intBytes) == net.IPv4len || len(intBytes) == net.IPv6len {
+		return intBytes
+	}
+
+	if isIPv6 {
+		return append(make([]byte, net.IPv6len-len(intBytes)), intBytes...)
+	}
+
+	return append(make([]byte, net.IPv4len-len(intBytes)), intBytes...)
 }

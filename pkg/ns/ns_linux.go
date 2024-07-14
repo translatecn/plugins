@@ -34,13 +34,6 @@ func GetCurrentNS() (NetNS, error) {
 	return GetNS(getCurrentThreadNetNSPath())
 }
 
-func getCurrentThreadNetNSPath() string {
-	// /proc/self/ns/net returns the namespace of the main thread, not
-	// of whatever thread this goroutine is running on.  Make sure we
-	// use the thread's net namespace since the thread is switching around
-	return fmt.Sprintf("/proc/%d/task/%d/ns/net", os.Getpid(), unix.Gettid())
-}
-
 func (ns *netNS) Close() error {
 	if err := ns.errorIfClosed(); err != nil {
 		return err
@@ -54,28 +47,7 @@ func (ns *netNS) Close() error {
 	return nil
 }
 
-func (ns *netNS) Set() error {
-	if err := ns.errorIfClosed(); err != nil {
-		return err
-	}
-
-	if err := unix.Setns(int(ns.Fd()), unix.CLONE_NEWNET); err != nil {
-		return fmt.Errorf("Error switching to ns %v: %v", ns.file.Name(), err)
-	}
-
-	return nil
-}
-
 type NetNS interface {
-	// Executes the passed closure in this object's network namespace,
-	// attempting to restore the original namespace before returning.
-	// However, since each OS thread can have a different network namespace,
-	// and Go's thread scheduling is highly variable, callers cannot
-	// guarantee any specific namespace is set unless operations that
-	// require that namespace are wrapped with Do().  Also, no code called
-	// from Do() should call runtime.UnlockOSThread(), or the risk
-	// of executing code in an incorrect namespace will be greater.  See
-	// https://github.com/golang/go/wiki/LockOSThread for further details.
 	Do(toRun func(NetNS) error) error
 
 	// Sets the current network namespace to this object's network namespace.
@@ -167,13 +139,41 @@ func (ns *netNS) errorIfClosed() error {
 	return nil
 }
 
+// WithNetNSPath executes the passed closure under the given network
+// namespace, restoring the original namespace afterwards.
+func WithNetNSPath(nspath string, toRun func(NetNS) error) error {
+	ns, err := GetNS(nspath)
+	if err != nil {
+		return err
+	}
+	defer ns.Close()
+	return ns.Do(toRun)
+}
+func getCurrentThreadNetNSPath() string {
+	// /proc/self/ns/net returns the namespace of the main thread, not
+	// of whatever thread this goroutine is running on.  Make sure we
+	// use the thread's net namespace since the thread is switching around
+	return fmt.Sprintf("/proc/%d/task/%d/ns/net", os.Getpid(), unix.Gettid())
+}
+
+func (ns *netNS) Set() error {
+	if err := ns.errorIfClosed(); err != nil {
+		return err
+	}
+
+	if err := unix.Setns(int(ns.Fd()), unix.CLONE_NEWNET); err != nil {
+		return fmt.Errorf("Error switching to ns %v: %v", ns.file.Name(), err)
+	}
+
+	return nil
+}
 func (ns *netNS) Do(toRun func(NetNS) error) error {
 	if err := ns.errorIfClosed(); err != nil {
 		return err
 	}
 
 	containedCall := func(hostNS NetNS) error {
-		threadNS, err := GetCurrentNS()
+		threadNS, err := GetCurrentNS() // /proc/242540/task/242549/ns/net
 		if err != nil {
 			return fmt.Errorf("failed to open current netns: %v", err)
 		}
@@ -182,7 +182,7 @@ func (ns *netNS) Do(toRun func(NetNS) error) error {
 		// switch to target namespace
 		if err = ns.Set(); err != nil {
 			return fmt.Errorf("error switching to ns %v: %v", ns.file.Name(), err)
-		}
+		} // /var/run/netns/cnitest-e7d40a86-47fe-18e7-13ca-770dd5756b10
 		defer func() {
 			err := threadNS.Set() // switch back
 			if err == nil {
@@ -211,6 +211,7 @@ func (ns *netNS) Do(toRun func(NetNS) error) error {
 	// to switch the namespace back to the original one, we can safely
 	// leave the thread locked to die without a risk of the current thread
 	// left lingering with incorrect namespace.
+	// 在一个新的 绿色线程 中启动回调，这样，如果我们以后无法将名称空间切换回原来的名称空间，我们可以安全地将线程锁定到死亡，而不会有当前线程与不正确的名称空间纠缠不清的风险。
 	var innerError error
 	go func() {
 		defer wg.Done()
@@ -220,15 +221,4 @@ func (ns *netNS) Do(toRun func(NetNS) error) error {
 	wg.Wait()
 
 	return innerError
-}
-
-// WithNetNSPath executes the passed closure under the given network
-// namespace, restoring the original namespace afterwards.
-func WithNetNSPath(nspath string, toRun func(NetNS) error) error {
-	ns, err := GetNS(nspath)
-	if err != nil {
-		return err
-	}
-	defer ns.Close()
-	return ns.Do(toRun)
 }

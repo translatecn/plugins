@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"log"
 	"net"
 	"os"
@@ -27,10 +28,10 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
 
-	"github.com/containernetworking/cni/pkg/invoke"
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/invoke"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -133,7 +134,7 @@ var _ = Describe("bandwidth measure test", func() {
 					Expect(hostNs.Do(func(ns.NetNS) error {
 						defer GinkgoRecover()
 
-						containerWithQoSRes, _, err = testutils.CmdAdd(containerWithQoSNS.Path(), "dummy", containerWithQoSIFName, []byte(ptpConf), func() error {
+						containerWithQoSRes, _, err = over.CmdAdd(containerWithQoSNS.Path(), "dummy", containerWithQoSIFName, []byte(ptpConf), func() error {
 							r, err := invoke.DelegateAdd(context.TODO(), "ptp", []byte(ptpConf), nil)
 							Expect(err).NotTo(HaveOccurred())
 							Expect(r.Print()).To(Succeed())
@@ -142,7 +143,7 @@ var _ = Describe("bandwidth measure test", func() {
 						})
 						Expect(err).NotTo(HaveOccurred())
 
-						containerWithoutQoSRes, _, err = testutils.CmdAdd(containerWithoutQoSNS.Path(), "dummy2", containerWithoutQoSIFName, []byte(ptpConf), func() error {
+						containerWithoutQoSRes, _, err = over.CmdAdd(containerWithoutQoSNS.Path(), "dummy2", containerWithoutQoSIFName, []byte(ptpConf), func() error {
 							r, err := invoke.DelegateAdd(context.TODO(), "ptp", []byte(ptpConf), nil)
 							Expect(err).NotTo(HaveOccurred())
 							Expect(r.Print()).To(Succeed())
@@ -175,10 +176,10 @@ var _ = Describe("bandwidth measure test", func() {
 							StdinData:   newConfBytes,
 						}
 
-						result, out, err := testutils.CmdAdd(containerWithQoSNS.Path(), args.ContainerID, "", newConfBytes, func() error { return cmdAdd(args) })
+						result, out, err := over.CmdAdd(containerWithQoSNS.Path(), args.ContainerID, "", newConfBytes, func() error { return cmdAdd(args) })
 						Expect(err).NotTo(HaveOccurred(), string(out))
 
-						if testutils.SpecVersionHasCHECK(ver) {
+						if over.SpecVersionHasCHECK(ver) {
 							// Do CNI Check
 							checkConf := &PluginConf{}
 							err = json.Unmarshal([]byte(ptpConf), &checkConf)
@@ -202,7 +203,7 @@ var _ = Describe("bandwidth measure test", func() {
 								StdinData:   newCheckBytes,
 							}
 
-							err = testutils.CmdCheck(containerWithQoSNS.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
+							err = over.CmdCheck(containerWithQoSNS.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
 							Expect(err).NotTo(HaveOccurred())
 						}
 
@@ -318,7 +319,7 @@ var _ = Describe("bandwidth measure test", func() {
 				Expect(hostNs.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
 
-					containerWithQoSRes, _, err = testutils.CmdAdd(containerWithQoSNS.Path(), "dummy", containerWithQoSIFName, []byte(ptpConf), func() error {
+					containerWithQoSRes, _, err = over.CmdAdd(containerWithQoSNS.Path(), "dummy", containerWithQoSIFName, []byte(ptpConf), func() error {
 						r, err := invoke.DelegateAdd(context.TODO(), "ptp", []byte(ptpConf), nil)
 						Expect(err).NotTo(HaveOccurred())
 						Expect(r.Print()).To(Succeed())
@@ -327,7 +328,7 @@ var _ = Describe("bandwidth measure test", func() {
 					})
 					Expect(err).NotTo(HaveOccurred())
 
-					containerWithoutQoSRes, _, err = testutils.CmdAdd(containerWithoutQoSNS.Path(), "dummy2", containerWithoutQoSIFName, []byte(ptpConf), func() error {
+					containerWithoutQoSRes, _, err = over.CmdAdd(containerWithoutQoSNS.Path(), "dummy2", containerWithoutQoSIFName, []byte(ptpConf), func() error {
 						r, err := invoke.DelegateAdd(context.TODO(), "ptp", []byte(ptpConf), nil)
 						Expect(err).NotTo(HaveOccurred())
 						Expect(r.Print()).To(Succeed())
@@ -361,10 +362,10 @@ var _ = Describe("bandwidth measure test", func() {
 						StdinData:   newConfBytes,
 					}
 
-					result, out, err := testutils.CmdAdd(containerWithQoSNS.Path(), args.ContainerID, "", newConfBytes, func() error { return cmdAdd(args) })
+					result, out, err := over.CmdAdd(containerWithQoSNS.Path(), args.ContainerID, "", newConfBytes, func() error { return cmdAdd(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 
-					if testutils.SpecVersionHasCHECK(ver) {
+					if over.SpecVersionHasCHECK(ver) {
 						// Do CNI Check
 						checkConf := &PluginConf{}
 						err = json.Unmarshal([]byte(ptpConf), &checkConf)
@@ -389,7 +390,7 @@ var _ = Describe("bandwidth measure test", func() {
 							StdinData:   newCheckBytes,
 						}
 
-						err = testutils.CmdCheck(containerWithQoSNS.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
+						err = over.CmdCheck(containerWithQoSNS.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
 						Expect(err).NotTo(HaveOccurred())
 					}
 
@@ -505,7 +506,7 @@ var _ = Describe("bandwidth measure test", func() {
 				Expect(hostNs.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
 
-					containerWithQoSRes, _, err = testutils.CmdAdd(containerWithQoSNS.Path(), "dummy", containerWithQoSIFName, []byte(ptpConf), func() error {
+					containerWithQoSRes, _, err = over.CmdAdd(containerWithQoSNS.Path(), "dummy", containerWithQoSIFName, []byte(ptpConf), func() error {
 						r, err := invoke.DelegateAdd(context.TODO(), "ptp", []byte(ptpConf), nil)
 						Expect(err).NotTo(HaveOccurred())
 						Expect(r.Print()).To(Succeed())
@@ -514,7 +515,7 @@ var _ = Describe("bandwidth measure test", func() {
 					})
 					Expect(err).NotTo(HaveOccurred())
 
-					containerWithoutQoSRes, _, err = testutils.CmdAdd(containerWithoutQoSNS.Path(), "dummy2", containerWithoutQoSIFName, []byte(ptpConf), func() error {
+					containerWithoutQoSRes, _, err = over.CmdAdd(containerWithoutQoSNS.Path(), "dummy2", containerWithoutQoSIFName, []byte(ptpConf), func() error {
 						r, err := invoke.DelegateAdd(context.TODO(), "ptp", []byte(ptpConf), nil)
 						Expect(err).NotTo(HaveOccurred())
 						Expect(r.Print()).To(Succeed())
@@ -548,10 +549,10 @@ var _ = Describe("bandwidth measure test", func() {
 						StdinData:   newConfBytes,
 					}
 
-					result, out, err := testutils.CmdAdd(containerWithQoSNS.Path(), args.ContainerID, "", newConfBytes, func() error { return cmdAdd(args) })
+					result, out, err := over.CmdAdd(containerWithQoSNS.Path(), args.ContainerID, "", newConfBytes, func() error { return cmdAdd(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 
-					if testutils.SpecVersionHasCHECK(ver) {
+					if over.SpecVersionHasCHECK(ver) {
 						// Do CNI Check
 						checkConf := &PluginConf{}
 						err = json.Unmarshal([]byte(ptpConf), &checkConf)
@@ -576,7 +577,7 @@ var _ = Describe("bandwidth measure test", func() {
 							StdinData:   newCheckBytes,
 						}
 
-						err = testutils.CmdCheck(containerWithQoSNS.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
+						err = over.CmdCheck(containerWithQoSNS.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
 						Expect(err).NotTo(HaveOccurred())
 					}
 
@@ -692,7 +693,7 @@ var _ = Describe("bandwidth measure test", func() {
 				Expect(hostNs.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
 
-					containerWithQoSRes, _, err = testutils.CmdAdd(containerWithQoSNS.Path(), "dummy", containerWithQoSIFName, []byte(ptpConf), func() error {
+					containerWithQoSRes, _, err = over.CmdAdd(containerWithQoSNS.Path(), "dummy", containerWithQoSIFName, []byte(ptpConf), func() error {
 						r, err := invoke.DelegateAdd(context.TODO(), "ptp", []byte(ptpConf), nil)
 						Expect(err).NotTo(HaveOccurred())
 						Expect(r.Print()).To(Succeed())
@@ -701,7 +702,7 @@ var _ = Describe("bandwidth measure test", func() {
 					})
 					Expect(err).NotTo(HaveOccurred())
 
-					containerWithoutQoSRes, _, err = testutils.CmdAdd(containerWithoutQoSNS.Path(), "dummy2", containerWithoutQoSIFName, []byte(ptpConf), func() error {
+					containerWithoutQoSRes, _, err = over.CmdAdd(containerWithoutQoSNS.Path(), "dummy2", containerWithoutQoSIFName, []byte(ptpConf), func() error {
 						r, err := invoke.DelegateAdd(context.TODO(), "ptp", []byte(ptpConf), nil)
 						Expect(err).NotTo(HaveOccurred())
 						Expect(r.Print()).To(Succeed())
@@ -735,10 +736,10 @@ var _ = Describe("bandwidth measure test", func() {
 						StdinData:   newConfBytes,
 					}
 
-					result, out, err := testutils.CmdAdd(containerWithQoSNS.Path(), args.ContainerID, "", newConfBytes, func() error { return cmdAdd(args) })
+					result, out, err := over.CmdAdd(containerWithQoSNS.Path(), args.ContainerID, "", newConfBytes, func() error { return cmdAdd(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 
-					if testutils.SpecVersionHasCHECK(ver) {
+					if over.SpecVersionHasCHECK(ver) {
 						// Do CNI Check
 						checkConf := &PluginConf{}
 						err = json.Unmarshal([]byte(ptpConf), &checkConf)
@@ -763,7 +764,7 @@ var _ = Describe("bandwidth measure test", func() {
 							StdinData:   newCheckBytes,
 						}
 
-						err = testutils.CmdCheck(containerWithQoSNS.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
+						err = over.CmdCheck(containerWithQoSNS.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
 						Expect(err).NotTo(HaveOccurred())
 					}
 

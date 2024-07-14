@@ -66,17 +66,15 @@ func NewNS() (ns.NetNS, error) {
 		return nil, err
 	}
 
-	// Remount the namespace directory shared. This will fail if it is not
-	// already a mountpoint, so bind-mount it on to itself to "upgrade" it
-	// to a mountpoint.
+	// 重新挂载共享的命名空间目录。如果它还不是挂载点，这将失败，因此将它绑定挂载到自身上以“升级”到挂载点。
 	err = unix.Mount("", nsRunDir, "none", unix.MS_SHARED|unix.MS_REC, "")
 	if err != nil {
 		if err != unix.EINVAL {
 			return nil, fmt.Errorf("mount --make-rshared %s failed: %q", nsRunDir, err)
 		}
-
-		// Recursively remount /var/run/netns on itself. The recursive flag is
-		// so that any existing netns bindmounts are carried over.
+		//[root@vm netns]# mount |grep cnitest
+		//nsfs on /run/netns/cnitest-94f9e985-6b6d-ba11-3144-8c339bdf9725 type nsfs (rw)
+		// 递归地在自身上重新挂载/var/run/netns。递归标志是为了使任何现有的网络绑定挂载都被转移。
 		err = unix.Mount(nsRunDir, nsRunDir, "none", unix.MS_BIND|unix.MS_REC, "")
 		if err != nil {
 			return nil, fmt.Errorf("mount --rbind %s %s failed: %q", nsRunDir, nsRunDir, err)
@@ -100,23 +98,17 @@ func NewNS() (ns.NetNS, error) {
 	}
 	mountPointFd.Close()
 
-	// Ensure the mount point is cleaned up on errors; if the namespace
-	// was successfully mounted this will have no effect because the file
-	// is in-use
+	// //确保挂载点在错误时被清理;如果名称空间已成功挂载，则不会产生任何影响，因为该文件正在使用中
 	defer os.RemoveAll(nsPath)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	// do namespace work in a dedicated goroutine, so that we can safely
-	// Lock/Unlock OSThread without upsetting the lock/unlock state of
-	// the caller of this function
+	// 在一个专门的goroutine中进行命名空间操作，这样我们就可以安全地锁定/解锁OSThread，而不会干扰此函数调用者的锁定/解锁状态。
 	go (func() {
 		defer wg.Done()
 		runtime.LockOSThread()
-		// Don't unlock. By not unlocking, golang will kill the OS thread when the
-		// goroutine is done (for go1.10+)
-
+		// 不要解锁。通过不解锁，golang将在goroutine完成后杀死OS线程（适用于go1.10+）
 		var origNS ns.NetNS
 		origNS, err = ns.GetNS(getCurrentThreadNetNSPath())
 		if err != nil {
@@ -130,12 +122,9 @@ func NewNS() (ns.NetNS, error) {
 			return
 		}
 
-		// Put this thread back to the orig ns, since it might get reused (pre go1.10)
+		// Put this  thread back to the orig ns, since it might get reused (pre go1.10)
 		defer origNS.Set()
-
-		// bind mount the netns from the current thread (from /proc) onto the
-		// mount point. This causes the namespace to persist, even when there
-		// are no threads in the ns.
+		//从当前线程(从/proc)绑定挂载网络到挂载点。这将导致名称空间持久化，即使在ns中没有线程时也是如此。
 		err = unix.Mount(getCurrentThreadNetNSPath(), nsPath, "none", unix.MS_BIND, "")
 		if err != nil {
 			err = fmt.Errorf("failed to bind mount ns at %s: %v", nsPath, err)

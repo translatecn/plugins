@@ -7,22 +7,18 @@ Read [CONTRIBUTING](CONTRIBUTING.md) for build and test instructions.
 
 ## Plugins supplied:
 ### Main: interface-creating
+- loopback: 将环回接口的状态设置为启动。
+- ptp: 创建一个veth对。
 - bridge: 创建一个网桥，将主机和容器添加到其中。
 - ipvlan: 在容器中添加一个 ipvlan 接口。
-- loopback: 将环回接口的状态设置为启动。
 - macvlan: 创建一个新的MAC地址，将所有流量转发到该容器。
-- ptp: 创建一个veth对。
 - vlan: 分配一个vlan设备。
 - host-device: 将已存在的设备移动到容器中。
 - dummy: 在容器中创建一个新的虚拟设备。
 
-#### Windows: Windows specific
-- win-bridge: 创建一个网桥，将主机和容器添加到其中。
-- win-overlay: 为容器创建一个覆盖接口。
-
 ### IPAM: IP address allocation
-- dhcp: 在主机上运行守护进程，代表容器发出DHCP请求
 - host-local: 维护一个本地已分配IP的数据库
+- dhcp: 在主机上运行守护进程，代表容器发出DHCP请求
 - static: 为容器分配单个静态IPv4/IPv6地址。它在调试目的中很有用。
 
 ### Meta: other plugins
@@ -42,3 +38,59 @@ For any questions about CNI, please reach out via:
 - Slack: #cni on the [CNCF slack](https://slack.cncf.io/).
 
 If you have a _security_ issue to report, please do so privately to the email addresses listed in the [OWNERS](OWNERS.md) file.
+
+- https://www.jianshu.com/p/a1607e9eea32
+- ip netns ls
+- /var/run/netns/
+- ip netns monitor
+
+
+host-local 分配IP
+loopback 无依赖
+ptp 依赖 host-local 
+
+portmap 依赖 ptp
+- iptables -t filter -P FORWARD ACCEPT
+- 
+
+
+
+
+
+iptables 重置
+```
+sudo iptables -F
+sudo iptables -X
+sudo iptables -t nat -F
+sudo iptables -t nat -X
+sudo iptables -t mangle -F
+sudo iptables -t mangle -X
+sudo iptables -P INPUT ACCEPT
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -P OUTPUT ACCEPT
+
+iptables -t nat -S
+iptables -t nat -N CNI-1b29d9511ed2bb3134d925d5
+
+iptables -t nat -C CNI-1b29d9511ed2bb3134d925d5 -d 10.1.2.2/24 -j ACCEPT -m comment --comment 'name: "mynet" id:"dummy"'
+iptables -t nat -A CNI-1b29d9511ed2bb3134d925d5 -d 10.1.2.2/24 -j ACCEPT -m comment --comment 'name: "mynet" id:"dummy"'
+
+iptables -t nat -C CNI-1b29d9511ed2bb3134d925d5 ! -d 224.0.0.0/4 -j MASQUERADE -m comment --comment 'name: "mynet" id:"dummy"'
+iptables -t nat -A CNI-1b29d9511ed2bb3134d925d5 ! -d 224.0.0.0/4 -j MASQUERADE -m comment --comment 'name: "mynet" id:"dummy"'
+
+iptables -t nat -C POSTROUTING -s 10.1.2.2 -j CNI-1b29d9511ed2bb3134d925d5 -m comment --comment 'name: "mynet" id:"dummy"'
+iptables -t nat -A POSTROUTING -s 10.1.2.2 -j CNI-1b29d9511ed2bb3134d925d5 -m comment --comment 'name: "mynet" id:"dummy"'
+
+
+
+
+```
+
+
+
+
+
+
+
+
+

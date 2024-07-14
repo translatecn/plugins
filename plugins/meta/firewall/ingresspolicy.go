@@ -21,7 +21,7 @@ import (
 
 	"github.com/coreos/go-iptables/iptables"
 
-	types100 "github.com/containernetworking/cni/pkg/types/100"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/utils"
 )
 

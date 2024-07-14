@@ -172,16 +172,6 @@ func genToplevelDnatChain() chain {
 	}
 }
 
-// genDnatChain creates the per-container chain.
-// Conditions are any static entry conditions for the chain.
-func genDnatChain(netName, containerID string) chain {
-	return chain{
-		table:       "nat",
-		name:        utils.MustFormatChainNameWithPrefix(netName, containerID, "DN-"),
-		entryChains: []string{TopLevelDNATChainName},
-	}
-}
-
 // dnatRules generates the destination NAT rules, one per port, to direct
 // traffic from hostip:hostport to podip:podport
 func fillDnatRules(c *chain, config *PortMapConf, containerNet net.IPNet) {
@@ -438,4 +428,14 @@ func deletePortmapStaleConnections(portMappings []PortMapEntry, family netlink.I
 		}
 	}
 	return nil
+}
+
+// genDnatChain creates the per-container chain.
+// Conditions are any static entry conditions for the chain.
+func genDnatChain(netName, containerID string) chain {
+	return chain{
+		table:       "nat",
+		name:        utils.MustFormatChainNameWithPrefix(netName, containerID, "DN-"), // cni-portmap-unit-test    unit-test-6103
+		entryChains: []string{TopLevelDNATChainName},                                  // CNI-HOSTPORT-DNAT
+	}
 }

@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"os"
 	"os/exec"
 	"sync"
@@ -25,10 +26,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	current "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
-	"github.com/containernetworking/plugins/pkg/testutils"
 )
 
 var _ = Describe("DHCP Multiple Lease Operations", func() {
@@ -113,7 +113,7 @@ var _ = Describe("DHCP Multiple Lease Operations", func() {
 		err := originalNS.Do(func(ns.NetNS) error {
 			defer GinkgoRecover()
 
-			r, _, err := testutils.CmdAddWithArgs(args, func() error {
+			r, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -136,7 +136,7 @@ var _ = Describe("DHCP Multiple Lease Operations", func() {
 		err = originalNS.Do(func(ns.NetNS) error {
 			defer GinkgoRecover()
 
-			r, _, err := testutils.CmdAddWithArgs(args, func() error {
+			r, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -157,7 +157,7 @@ var _ = Describe("DHCP Multiple Lease Operations", func() {
 		}
 
 		err = originalNS.Do(func(ns.NetNS) error {
-			return testutils.CmdDelWithArgs(args, func() error {
+			return over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 		})
@@ -171,7 +171,7 @@ var _ = Describe("DHCP Multiple Lease Operations", func() {
 		}
 
 		err = originalNS.Do(func(ns.NetNS) error {
-			return testutils.CmdDelWithArgs(args, func() error {
+			return over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 		})

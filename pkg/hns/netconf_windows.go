@@ -25,7 +25,7 @@ import (
 
 	"github.com/Microsoft/hcsshim/hcn"
 	"github.com/buger/jsonparser"
-	"github.com/containernetworking/cni/pkg/types"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
 )
 
 // NetConf is the CNI spec

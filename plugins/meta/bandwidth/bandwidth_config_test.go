@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"math"
 	"net"
 	"syscall"
@@ -24,8 +25,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -120,7 +121,7 @@ var _ = Describe("bandwidth config test", func() {
 				Expect(hostNs.Do(func(netNS ns.NetNS) error {
 					defer GinkgoRecover()
 
-					_, _, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, _, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).To(MatchError("bad subnet \"hello\" provided, details invalid CIDR address: hello"))
 					return nil
 				})).To(Succeed())
@@ -169,7 +170,7 @@ var _ = Describe("bandwidth config test", func() {
 				Expect(hostNs.Do(func(netNS ns.NetNS) error {
 					defer GinkgoRecover()
 
-					_, _, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, _, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).To(MatchError("bad subnet \"hello\" provided, details invalid CIDR address: hello"))
 					return nil
 				})).To(Succeed())
@@ -219,7 +220,7 @@ var _ = Describe("bandwidth config test", func() {
 				Expect(hostNs.Do(func(netNS ns.NetNS) error {
 					defer GinkgoRecover()
 
-					_, _, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, _, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).To(MatchError("unshapedSubnets and shapedSubnets cannot be both specified, one of them should be discarded"))
 					return nil
 				})).To(Succeed())
@@ -267,7 +268,7 @@ var _ = Describe("bandwidth config test", func() {
 				Expect(hostNs.Do(func(netNS ns.NetNS) error {
 					defer GinkgoRecover()
 
-					_, _, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, _, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).To(MatchError("if burst is set, rate must also be set"))
 					return nil
 				})).To(Succeed())
@@ -315,7 +316,7 @@ var _ = Describe("bandwidth config test", func() {
 				Expect(hostNs.Do(func(netNS ns.NetNS) error {
 					defer GinkgoRecover()
 
-					_, _, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, _, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).To(MatchError("if burst is set, rate must also be set"))
 					return nil
 				})).To(Succeed())
@@ -373,7 +374,7 @@ var _ = Describe("bandwidth config test", func() {
 
 				Expect(hostNs.Do(func(netNS ns.NetNS) error {
 					defer GinkgoRecover()
-					r, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					r, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 					result, err := types100.GetResult(r)
 					Expect(err).NotTo(HaveOccurred())
@@ -523,7 +524,7 @@ var _ = Describe("bandwidth config test", func() {
 				Expect(hostNs.Do(func(netNS ns.NetNS) error {
 					defer GinkgoRecover()
 
-					_, _, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, _, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).To(MatchError("if burst is set, rate must also be set"))
 					return nil
 				})).To(Succeed())

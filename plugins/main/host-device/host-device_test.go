@@ -17,6 +17,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"math/rand"
 	"net"
 	"os"
@@ -27,11 +28,11 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	types040 "github.com/containernetworking/cni/pkg/types/040"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
-	"github.com/containernetworking/cni/pkg/version"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	types040 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/040"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/version"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -372,7 +373,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -402,7 +403,7 @@ var _ = Describe("base functionality", func() {
 			// Check that deleting the device moves it back and restores the name
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err := testutils.CmdDelWithArgs(args, func() error {
+				err := over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -453,7 +454,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -499,7 +500,7 @@ var _ = Describe("base functionality", func() {
 			// try to call CmdDel and fails
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).To(HaveOccurred())
@@ -527,7 +528,7 @@ var _ = Describe("base functionality", func() {
 			// try to call CmdDel and succeed
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -582,7 +583,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -594,7 +595,7 @@ var _ = Describe("base functionality", func() {
 			// call CmdDel
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -648,7 +649,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -686,7 +687,7 @@ var _ = Describe("base functionality", func() {
 			// Check that deleting the device moves it back and restores the name
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -710,7 +711,7 @@ var _ = Describe("base functionality", func() {
 				IfName:      ifname,
 				StdinData:   []byte(conf),
 			}
-			_, _, err := testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+			_, _, err := over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 			Expect(err).To(MatchError(`specify either "device", "hwaddr", "kernelpath" or "pciBusID"`))
 		})
 
@@ -751,7 +752,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -778,7 +779,7 @@ var _ = Describe("base functionality", func() {
 				return nil
 			})
 
-			if testutils.SpecVersionHasCHECK(ver) {
+			if over.SpecVersionHasCHECK(ver) {
 				// call CmdCheck
 				n := &Net{}
 				err = json.Unmarshal([]byte(conf), &n)
@@ -796,7 +797,7 @@ var _ = Describe("base functionality", func() {
 
 				err = originalNS.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
-					return testutils.CmdCheckWithArgs(args, func() error { return cmdCheck(args) })
+					return over.CmdCheckWithArgs(args, func() error { return cmdCheck(args) })
 				})
 				Expect(err).NotTo(HaveOccurred())
 			}
@@ -804,7 +805,7 @@ var _ = Describe("base functionality", func() {
 			// Check that deleting the device moves it back and restores the name
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -854,7 +855,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -871,7 +872,7 @@ var _ = Describe("base functionality", func() {
 			n.IPAM, err = LoadIPAMConfig([]byte(conf), "")
 			Expect(err).NotTo(HaveOccurred())
 
-			if testutils.SpecVersionHasCHECK(ver) {
+			if over.SpecVersionHasCHECK(ver) {
 				newConf, err := buildOneConfig("testConfig", ver, n, resI)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -882,7 +883,7 @@ var _ = Describe("base functionality", func() {
 
 				err = originalNS.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
-					return testutils.CmdCheckWithArgs(args, func() error { return cmdCheck(args) })
+					return over.CmdCheckWithArgs(args, func() error { return cmdCheck(args) })
 				})
 				Expect(err).NotTo(HaveOccurred())
 			}
@@ -890,7 +891,7 @@ var _ = Describe("base functionality", func() {
 			// call CmdDel
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -943,7 +944,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -955,7 +956,7 @@ var _ = Describe("base functionality", func() {
 			// call CmdDel
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -1009,7 +1010,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -1052,7 +1053,7 @@ var _ = Describe("base functionality", func() {
 			n.IPAM, err = LoadIPAMConfig([]byte(conf), "")
 			Expect(err).NotTo(HaveOccurred())
 
-			if testutils.SpecVersionHasCHECK(ver) {
+			if over.SpecVersionHasCHECK(ver) {
 				newConf, err := buildOneConfig("testConfig", ver, n, resI)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -1065,7 +1066,7 @@ var _ = Describe("base functionality", func() {
 
 				err = originalNS.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
-					return testutils.CmdCheckWithArgs(args, func() error { return cmdCheck(args) })
+					return over.CmdCheckWithArgs(args, func() error { return cmdCheck(args) })
 				})
 				Expect(err).NotTo(HaveOccurred())
 			}
@@ -1073,7 +1074,7 @@ var _ = Describe("base functionality", func() {
 			// Check that deleting the device moves it back and restores the name
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -1124,7 +1125,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -1170,7 +1171,7 @@ var _ = Describe("base functionality", func() {
 			// try to call CmdDel and fails
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).To(HaveOccurred())
@@ -1199,7 +1200,7 @@ var _ = Describe("base functionality", func() {
 			// try to call CmdDel and succeed
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -1274,7 +1275,7 @@ var _ = Describe("base functionality", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 				var err error
-				resI, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+				resI, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 				return err
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -1296,7 +1297,7 @@ var _ = Describe("base functionality", func() {
 			// call CmdDel, expect it to succeed
 			_ = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
-				err = testutils.CmdDelWithArgs(args, func() error {
+				err = over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 				Expect(err).ToNot(HaveOccurred())

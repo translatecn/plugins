@@ -18,17 +18,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	ipam2 "github.com/containernetworking/plugins/pkg/over/ipam"
 	"net"
 	"runtime"
 
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	current "github.com/containernetworking/cni/pkg/types/100"
-	"github.com/containernetworking/cni/pkg/version"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/version"
 	"github.com/containernetworking/plugins/pkg/ip"
-	"github.com/containernetworking/plugins/pkg/ipam"
 	"github.com/containernetworking/plugins/pkg/ns"
 	bv "github.com/containernetworking/plugins/pkg/utils/buildversion"
 	"github.com/containernetworking/plugins/pkg/utils/sysctl"
@@ -319,7 +319,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 
 	if isLayer3 {
 		// run the IPAM plugin and get back the config to apply
-		r, err := ipam.ExecAdd(n.IPAM.Type, args.StdinData)
+		r, err := ipam2.ExecAdd(n.IPAM.Type, args.StdinData)
 		if err != nil {
 			return err
 		}
@@ -327,7 +327,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 		// Invoke ipam del if err to avoid ip leak
 		defer func() {
 			if err != nil {
-				ipam.ExecDel(n.IPAM.Type, args.StdinData)
+				ipam2.ExecDel(n.IPAM.Type, args.StdinData)
 			}
 		}()
 
@@ -353,7 +353,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 			_, _ = sysctl.Sysctl(fmt.Sprintf("net/ipv4/conf/%s/arp_notify", args.IfName), "1")
 			_, _ = sysctl.Sysctl(fmt.Sprintf("net/ipv6/conf/%s/ndisc_notify", args.IfName), "1")
 
-			return ipam.ConfigureIface(args.IfName, result)
+			return ipam2.ConfigureIface(args.IfName, result)
 		})
 		if err != nil {
 			return err
@@ -391,7 +391,7 @@ func cmdDel(args *skel.CmdArgs) error {
 
 	isLayer3 := n.IPAM.Type != ""
 	if isLayer3 {
-		err = ipam.ExecDel(n.IPAM.Type, args.StdinData)
+		err = ipam2.ExecDel(n.IPAM.Type, args.StdinData)
 		if err != nil {
 			return err
 		}
@@ -444,7 +444,7 @@ func cmdCheck(args *skel.CmdArgs) error {
 
 	if isLayer3 {
 		// run the IPAM plugin and get back the config to apply
-		err = ipam.ExecCheck(n.IPAM.Type, args.StdinData)
+		err = ipam2.ExecCheck(n.IPAM.Type, args.StdinData)
 		if err != nil {
 			return err
 		}

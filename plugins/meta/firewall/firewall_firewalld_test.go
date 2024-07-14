@@ -17,6 +17,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"os/exec"
 	"strings"
 	"sync"
@@ -26,9 +27,9 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/containernetworking/cni/pkg/invoke"
-	"github.com/containernetworking/cni/pkg/skel"
-	current "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/invoke"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -203,7 +204,7 @@ var _ = Describe("firewalld test", func() {
 				IfName:      ifname,
 				StdinData:   conf,
 			}
-			_, _, err := testutils.CmdAdd(targetNs.Path(), args.ContainerID, ifname, conf, func() error {
+			_, _, err := over.CmdAdd(targetNs.Path(), args.ContainerID, ifname, conf, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -211,7 +212,7 @@ var _ = Describe("firewalld test", func() {
 			Expect(fwd.source).To(Equal("10.0.0.2/32"))
 			fwd.clear()
 
-			err = testutils.CmdDel(targetNs.Path(), args.ContainerID, ifname, func() error {
+			err = over.CmdDel(targetNs.Path(), args.ContainerID, ifname, func() error {
 				return cmdDel(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -229,7 +230,7 @@ var _ = Describe("firewalld test", func() {
 				IfName:      ifname,
 				StdinData:   conf,
 			}
-			_, _, err := testutils.CmdAdd(targetNs.Path(), args.ContainerID, ifname, conf, func() error {
+			_, _, err := over.CmdAdd(targetNs.Path(), args.ContainerID, ifname, conf, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -247,7 +248,7 @@ var _ = Describe("firewalld test", func() {
 				IfName:      ifname,
 				StdinData:   conf,
 			}
-			r, _, err := testutils.CmdAdd(targetNs.Path(), args.ContainerID, ifname, conf, func() error {
+			r, _, err := over.CmdAdd(targetNs.Path(), args.ContainerID, ifname, conf, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -271,24 +272,24 @@ var _ = Describe("firewalld test", func() {
 				IfName:      ifname,
 				StdinData:   conf,
 			}
-			r, _, err := testutils.CmdAddWithArgs(args, func() error {
+			r, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(fwd.zone).To(Equal("trusted"))
 			Expect(fwd.source).To(Equal("10.0.0.2/32"))
 
-			if testutils.SpecVersionHasCHECK(ver) {
+			if over.SpecVersionHasCHECK(ver) {
 				_, err = current.GetResult(r)
 				Expect(err).NotTo(HaveOccurred())
 
-				err = testutils.CmdCheckWithArgs(args, func() error {
+				err = over.CmdCheckWithArgs(args, func() error {
 					return cmdCheck(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
 			}
 
-			err = testutils.CmdDelWithArgs(args, func() error {
+			err = over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 			Expect(err).NotTo(HaveOccurred())

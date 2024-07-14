@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	ipam2 "github.com/containernetworking/plugins/pkg/over/ipam"
 	"net"
 	"os"
 	"runtime"
@@ -27,12 +28,11 @@ import (
 
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	current "github.com/containernetworking/cni/pkg/types/100"
-	"github.com/containernetworking/cni/pkg/version"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/version"
 	"github.com/containernetworking/plugins/pkg/ip"
-	"github.com/containernetworking/plugins/pkg/ipam"
 	"github.com/containernetworking/plugins/pkg/link"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/utils"
@@ -585,7 +585,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 
 	if isLayer3 {
 		// run the IPAM plugin and get back the config to apply
-		r, err := ipam.ExecAdd(n.IPAM.Type, args.StdinData)
+		r, err := ipam2.ExecAdd(n.IPAM.Type, args.StdinData)
 		if err != nil {
 			return err
 		}
@@ -593,7 +593,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 		// release IP in case of failure
 		defer func() {
 			if !success {
-				ipam.ExecDel(n.IPAM.Type, args.StdinData)
+				ipam2.ExecDel(n.IPAM.Type, args.StdinData)
 			}
 		}()
 
@@ -628,7 +628,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 			_, _ = sysctl.Sysctl(fmt.Sprintf("net/ipv4/conf/%s/arp_notify", args.IfName), "1")
 
 			// Add the IP to the interface
-			return ipam.ConfigureIface(args.IfName, result)
+			return ipam2.ConfigureIface(args.IfName, result)
 		}); err != nil {
 			return err
 		}
@@ -767,7 +767,7 @@ func cmdDel(args *skel.CmdArgs) error {
 
 	ipamDel := func() error {
 		if isLayer3 {
-			if err := ipam.ExecDel(n.IPAM.Type, args.StdinData); err != nil {
+			if err := ipam2.ExecDel(n.IPAM.Type, args.StdinData); err != nil {
 				return err
 			}
 		}
@@ -976,7 +976,7 @@ func cmdCheck(args *skel.CmdArgs) error {
 	defer netns.Close()
 
 	// run the IPAM plugin and get back the config to apply
-	err = ipam.ExecCheck(n.IPAM.Type, args.StdinData)
+	err = ipam2.ExecCheck(n.IPAM.Type, args.StdinData)
 	if err != nil {
 		return err
 	}

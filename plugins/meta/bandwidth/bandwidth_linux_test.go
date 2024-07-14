@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"math"
 	"net"
 	"syscall"
@@ -24,8 +25,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -119,7 +120,7 @@ var _ = Describe("bandwidth test", func() {
 				// Container egress (host ingress)
 				Expect(hostNs.Do(func(_ ns.NetNS) error {
 					defer GinkgoRecover()
-					r, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					r, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 					result, err := types100.GetResult(r)
 					Expect(err).NotTo(HaveOccurred())
@@ -268,7 +269,7 @@ var _ = Describe("bandwidth test", func() {
 				// Container egress (host ingress)
 				Expect(hostNs.Do(func(_ ns.NetNS) error {
 					defer GinkgoRecover()
-					r, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					r, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 					result, err := types100.GetResult(r)
 					Expect(err).NotTo(HaveOccurred())
@@ -525,7 +526,7 @@ var _ = Describe("bandwidth test", func() {
 			// Container egress (host ingress)
 			Expect(hostNs.Do(func(_ ns.NetNS) error {
 				defer GinkgoRecover()
-				r, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+				r, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 				Expect(err).NotTo(HaveOccurred(), string(out))
 				result, err := types100.GetResult(r)
 				Expect(err).NotTo(HaveOccurred())
@@ -782,7 +783,7 @@ var _ = Describe("bandwidth test", func() {
 			Expect(hostNs.Do(func(_ ns.NetNS) error {
 				defer GinkgoRecover()
 
-				_, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, ifbDeviceName, []byte(conf), func() error { return cmdAdd(args) })
+				_, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, ifbDeviceName, []byte(conf), func() error { return cmdAdd(args) })
 				Expect(err).NotTo(HaveOccurred(), string(out))
 
 				ifbLink, err := netlink.LinkByName(ifbDeviceName)
@@ -947,7 +948,7 @@ var _ = Describe("bandwidth test", func() {
 			Expect(hostNs.Do(func(_ ns.NetNS) error {
 				defer GinkgoRecover()
 
-				_, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, ifbDeviceName, []byte(conf), func() error { return cmdAdd(args) })
+				_, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, ifbDeviceName, []byte(conf), func() error { return cmdAdd(args) })
 				Expect(err).NotTo(HaveOccurred(), string(out))
 
 				// Since we do not setup any egress QoS, no ifb interface should be created at all
@@ -1052,7 +1053,7 @@ var _ = Describe("bandwidth test", func() {
 
 			Expect(hostNs.Do(func(_ ns.NetNS) error {
 				defer GinkgoRecover()
-				r, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+				r, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 				Expect(err).NotTo(HaveOccurred(), string(out))
 				result, err := types100.GetResult(r)
 				Expect(err).NotTo(HaveOccurred())
@@ -1239,7 +1240,7 @@ var _ = Describe("bandwidth test", func() {
 
 				Expect(hostNs.Do(func(_ ns.NetNS) error {
 					defer GinkgoRecover()
-					_, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 
 					_, err = netlink.LinkByName(hostIfname)
@@ -1248,7 +1249,7 @@ var _ = Describe("bandwidth test", func() {
 					_, err = netlink.LinkByName(ifbDeviceName)
 					Expect(err).NotTo(HaveOccurred())
 
-					err = testutils.CmdDel(containerNs.Path(), args.ContainerID, "", func() error { return cmdDel(args) })
+					err = over.CmdDel(containerNs.Path(), args.ContainerID, "", func() error { return cmdDel(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 
 					_, err = netlink.LinkByName(ifbDeviceName)
@@ -1305,7 +1306,7 @@ var _ = Describe("bandwidth test", func() {
 
 				Expect(hostNs.Do(func(_ ns.NetNS) error {
 					defer GinkgoRecover()
-					_, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 
 					_, err = netlink.LinkByName(hostIfname)
@@ -1314,14 +1315,14 @@ var _ = Describe("bandwidth test", func() {
 					_, err = netlink.LinkByName(ifbDeviceName)
 					Expect(err).NotTo(HaveOccurred())
 
-					if testutils.SpecVersionHasCHECK(ver) {
+					if over.SpecVersionHasCHECK(ver) {
 						// Do CNI Check
 
-						err = testutils.CmdCheck(containerNs.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
+						err = over.CmdCheck(containerNs.Path(), args.ContainerID, "", func() error { return cmdCheck(args) })
 						Expect(err).NotTo(HaveOccurred())
 					}
 
-					err = testutils.CmdDel(containerNs.Path(), args.ContainerID, "", func() error { return cmdDel(args) })
+					err = over.CmdDel(containerNs.Path(), args.ContainerID, "", func() error { return cmdDel(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 
 					_, err = netlink.LinkByName(ifbDeviceName)
@@ -1390,7 +1391,7 @@ var _ = Describe("bandwidth test", func() {
 
 				Expect(hostNs.Do(func(_ ns.NetNS) error {
 					defer GinkgoRecover()
-					r, out, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					r, out, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).NotTo(HaveOccurred(), string(out))
 					result, err := types100.GetResult(r)
 					Expect(err).NotTo(HaveOccurred())
@@ -1539,7 +1540,7 @@ var _ = Describe("bandwidth test", func() {
 				Expect(hostNs.Do(func(_ ns.NetNS) error {
 					defer GinkgoRecover()
 
-					_, _, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, _, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).To(HaveOccurred())
 
 					return nil
@@ -1572,7 +1573,7 @@ var _ = Describe("bandwidth test", func() {
 				Expect(hostNs.Do(func(_ ns.NetNS) error {
 					defer GinkgoRecover()
 
-					_, _, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, _, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).To(HaveOccurred())
 
 					return nil
@@ -1624,7 +1625,7 @@ var _ = Describe("bandwidth test", func() {
 				Expect(hostNs.Do(func(_ ns.NetNS) error {
 					defer GinkgoRecover()
 
-					_, _, err := testutils.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
+					_, _, err := over.CmdAdd(containerNs.Path(), args.ContainerID, "", []byte(conf), func() error { return cmdAdd(args) })
 					Expect(err).To(HaveOccurred())
 
 					return nil

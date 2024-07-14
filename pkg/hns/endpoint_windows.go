@@ -22,8 +22,8 @@ import (
 	"github.com/Microsoft/hcsshim"
 	"github.com/Microsoft/hcsshim/hcn"
 
-	"github.com/containernetworking/cni/pkg/types"
-	current "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 
 	"github.com/containernetworking/plugins/pkg/errors"
 )
@@ -39,7 +39,7 @@ type EndpointInfo struct {
 	NetworkId    string
 	Gateway      net.IP
 	IpAddress    net.IP
-	MacAddress  string
+	MacAddress   string
 }
 
 // GetSandboxContainerID returns the sandbox ID of this pod.
@@ -249,7 +249,7 @@ func GenerateHcnEndpoint(epInfo *EndpointInfo, n *NetConf) (*hcn.HostComputeEndp
 			Minor: 0,
 		},
 		Name:               epInfo.EndpointName,
-		MacAddress: epInfo.MacAddress,
+		MacAddress:         epInfo.MacAddress,
 		HostComputeNetwork: epInfo.NetworkId,
 		Dns: hcn.Dns{
 			Domain:     epInfo.DNS.Domain,
@@ -289,7 +289,7 @@ func RemoveHcnEndpoint(epName string) error {
 	if epNamespace != nil {
 		err = hcn.RemoveNamespaceEndpoint(hcnEndpoint.HostComputeNamespace, hcnEndpoint.Id)
 		if err != nil && !hcn.IsNotFoundError(err) {
-			return errors.Annotatef(err,"error removing endpoint: %s from namespace", epName)
+			return errors.Annotatef(err, "error removing endpoint: %s from namespace", epName)
 		}
 	}
 

@@ -17,6 +17,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"io"
 	"net"
 	"os"
@@ -33,8 +34,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -237,7 +238,7 @@ var _ = Describe("DHCP Operations", func() {
 		Expect(os.RemoveAll(tmpDir)).To(Succeed())
 	})
 
-	for _, ver := range testutils.AllSpecVersions {
+	for _, ver := range over.AllSpecVersions {
 		// Redefine ver inside for scope so real value is picked up by each dynamically defined It()
 		// See Gingkgo's "Patterns for dynamically generating tests" documentation.
 		ver := ver
@@ -264,7 +265,7 @@ var _ = Describe("DHCP Operations", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -278,7 +279,7 @@ var _ = Describe("DHCP Operations", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			err = originalNS.Do(func(ns.NetNS) error {
-				return testutils.CmdDelWithArgs(args, func() error {
+				return over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 			})
@@ -307,7 +308,7 @@ var _ = Describe("DHCP Operations", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -333,7 +334,7 @@ var _ = Describe("DHCP Operations", func() {
 					started.Wait()
 
 					err := originalNS.Do(func(ns.NetNS) error {
-						return testutils.CmdDelWithArgs(args, func() error {
+						return over.CmdDelWithArgs(args, func() error {
 							copiedArgs := &skel.CmdArgs{
 								ContainerID: args.ContainerID,
 								Netns:       args.Netns,
@@ -352,7 +353,7 @@ var _ = Describe("DHCP Operations", func() {
 			wg.Wait()
 
 			err = originalNS.Do(func(ns.NetNS) error {
-				return testutils.CmdDelWithArgs(args, func() error {
+				return over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 			})
@@ -561,7 +562,7 @@ var _ = Describe("DHCP Lease Unavailable Operations", func() {
 		Expect(os.RemoveAll(tmpDir)).To(Succeed())
 	})
 
-	for _, ver := range testutils.AllSpecVersions {
+	for _, ver := range over.AllSpecVersions {
 		// Redefine ver inside for scope so real value is picked up by each dynamically defined It()
 		// See Gingkgo's "Patterns for dynamically generating tests" documentation.
 		ver := ver
@@ -589,7 +590,7 @@ var _ = Describe("DHCP Lease Unavailable Operations", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -612,7 +613,7 @@ var _ = Describe("DHCP Lease Unavailable Operations", func() {
 			err = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				_, _, err := testutils.CmdAddWithArgs(args, func() error {
+				_, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).To(HaveOccurred())
@@ -630,7 +631,7 @@ var _ = Describe("DHCP Lease Unavailable Operations", func() {
 			}
 
 			err = originalNS.Do(func(ns.NetNS) error {
-				return testutils.CmdDelWithArgs(args, func() error {
+				return over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 			})
@@ -644,7 +645,7 @@ var _ = Describe("DHCP Lease Unavailable Operations", func() {
 			}
 
 			err = originalNS.Do(func(ns.NetNS) error {
-				return testutils.CmdDelWithArgs(args, func() error {
+				return over.CmdDelWithArgs(args, func() error {
 					return cmdDel(args)
 				})
 			})

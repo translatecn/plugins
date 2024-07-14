@@ -17,6 +17,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
+	over2 "github.com/containernetworking/plugins/plugins/ipam/over/host-local/backend/allocator"
 	"net"
 	"os"
 	"strings"
@@ -26,14 +28,13 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	types020 "github.com/containernetworking/cni/pkg/types/020"
-	types040 "github.com/containernetworking/cni/pkg/types/040"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	types020 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/020"
+	types040 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/040"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
-	"github.com/containernetworking/plugins/plugins/ipam/host-local/backend/allocator"
 )
 
 const (
@@ -48,7 +49,7 @@ type Net struct {
 	Master        string                 `json:"master"`
 	VlanID        int                    `json:"vlanId"`
 	MTU           int                    `json:"mtu"`
-	IPAM          *allocator.IPAMConfig  `json:"ipam"`
+	IPAM          *over2.IPAMConfig      `json:"ipam"`
 	DNS           types.DNS              `json:"dns"`
 	RawPrevResult map[string]interface{} `json:"prevResult,omitempty"`
 	PrevResult    types100.Result        `json:"-"`
@@ -236,7 +237,7 @@ var _ = Describe("vlan Operations", func() {
 		}
 		isInContainer := inContainer // Tests need a local var with constant value
 
-		for _, ver := range testutils.AllSpecVersions {
+		for _, ver := range over.AllSpecVersions {
 			// Redefine ver inside for scope so real value is picked up by each dynamically defined It()
 			// See Gingkgo's "Patterns for dynamically generating tests" documentation.
 			ver := ver
@@ -354,7 +355,7 @@ var _ = Describe("vlan Operations", func() {
 					defer GinkgoRecover()
 
 					var err error
-					result, _, err = testutils.CmdAddWithArgs(args, func() error {
+					result, _, err = over.CmdAddWithArgs(args, func() error {
 						return cmdAdd(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
@@ -390,7 +391,7 @@ var _ = Describe("vlan Operations", func() {
 				err = json.Unmarshal([]byte(conf), &n)
 				Expect(err).NotTo(HaveOccurred())
 
-				n.IPAM, _, err = allocator.LoadIPAMConfig([]byte(conf), "")
+				n.IPAM, _, err = over2.LoadIPAMConfig([]byte(conf), "")
 				Expect(err).NotTo(HaveOccurred())
 
 				newConf, err := buildOneConfig("vlanTestv4", ver, n, result)
@@ -407,10 +408,10 @@ var _ = Describe("vlan Operations", func() {
 				// CNI Check host-device in the target namespace
 				err = originalNS.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
-					return testutils.CmdCheckWithArgs(args, func() error { return cmdCheck(args) })
+					return over.CmdCheckWithArgs(args, func() error { return cmdCheck(args) })
 				})
 
-				if testutils.SpecVersionHasCHECK(ver) {
+				if over.SpecVersionHasCHECK(ver) {
 					Expect(err).NotTo(HaveOccurred())
 				} else {
 					Expect(err).To(MatchError("config version does not allow CHECK"))
@@ -421,7 +422,7 @@ var _ = Describe("vlan Operations", func() {
 				err = originalNS.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
 
-					err = testutils.CmdDelWithArgs(args, func() error {
+					err = over.CmdDelWithArgs(args, func() error {
 						return cmdDel(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
@@ -445,7 +446,7 @@ var _ = Describe("vlan Operations", func() {
 				err = originalNS.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
 
-					err = testutils.CmdDelWithArgs(args, func() error {
+					err = over.CmdDelWithArgs(args, func() error {
 						return cmdDel(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
@@ -502,7 +503,7 @@ var _ = Describe("vlan Operations", func() {
 					_ = originalNS.Do(func(_ ns.NetNS) error {
 						defer GinkgoRecover()
 
-						_, _, err = testutils.CmdAddWithArgs(args, func() error {
+						_, _, err = over.CmdAddWithArgs(args, func() error {
 							return cmdAdd(args)
 						})
 						Expect(err).To(Equal(fmt.Errorf("invalid MTU 1600, must be [0, master MTU(1500)]")))
@@ -523,7 +524,7 @@ var _ = Describe("vlan Operations", func() {
 					_ = originalNS.Do(func(_ ns.NetNS) error {
 						defer GinkgoRecover()
 
-						_, _, err = testutils.CmdAddWithArgs(args, func() error {
+						_, _, err = over.CmdAddWithArgs(args, func() error {
 							return cmdAdd(args)
 						})
 						Expect(err).To(Equal(fmt.Errorf("invalid MTU -100, must be [0, master MTU(1500)]")))

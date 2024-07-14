@@ -16,11 +16,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -71,7 +72,7 @@ var _ = Describe("sample test", func() {
 			IfName:      ifname,
 			StdinData:   []byte(conf),
 		}
-		_, _, err := testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+		_, _, err := over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -105,7 +106,7 @@ var _ = Describe("sample test", func() {
 			IfName:      "eth0",
 			StdinData:   []byte(conf),
 		}
-		_, _, err := testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+		_, _, err := over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 		Expect(err).To(MatchError("anotherAwesomeArg must be specified"))
 	})
 
@@ -123,7 +124,7 @@ var _ = Describe("sample test", func() {
 			IfName:      "eth0",
 			StdinData:   []byte(conf),
 		}
-		_, _, err := testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+		_, _, err := over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 		Expect(err).To(MatchError("must be called as chained plugin"))
 	})
 })

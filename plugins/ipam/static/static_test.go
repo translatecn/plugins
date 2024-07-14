@@ -16,20 +16,20 @@ package main
 
 import (
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"net"
 	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
-	"github.com/containernetworking/plugins/pkg/testutils"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 )
 
 var _ = Describe("static Operations", func() {
-	for _, ver := range testutils.AllSpecVersions {
+	for _, ver := range over.AllSpecVersions {
 		// Redefine ver inside for scope so real value is picked up by each dynamically defined It()
 		// See Gingkgo's "Patterns for dynamically generating tests" documentation.
 		ver := ver
@@ -73,11 +73,11 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			r, raw, err := testutils.CmdAddWithArgs(args, func() error {
+			r, raw, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
-			if testutils.SpecVersionHasIPVersion(ver) {
+			if over.SpecVersionHasIPVersion(ver) {
 				Expect(strings.Index(string(raw), "\"version\":")).Should(BeNumerically(">", 0))
 			}
 
@@ -106,7 +106,7 @@ var _ = Describe("static Operations", func() {
 			}))
 
 			// Release the IP
-			err = testutils.CmdDelWithArgs(args, func() error {
+			err = over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -151,7 +151,7 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Release the IP
-			err := testutils.CmdDelWithArgs(args, func() error {
+			err := over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -188,11 +188,11 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			r, raw, err := testutils.CmdAddWithArgs(args, func() error {
+			r, raw, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
-			if testutils.SpecVersionHasIPVersion(ver) {
+			if over.SpecVersionHasIPVersion(ver) {
 				Expect(strings.Index(string(raw), "\"version\":")).Should(BeNumerically(">", 0))
 			}
 
@@ -214,7 +214,7 @@ var _ = Describe("static Operations", func() {
 			}))
 
 			// Release the IP
-			err = testutils.CmdDelWithArgs(args, func() error {
+			err = over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -243,17 +243,17 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			r, raw, err := testutils.CmdAddWithArgs(args, func() error {
+			r, raw, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
-			if !testutils.SpecVersionHasMultipleIPs(ver) {
+			if !over.SpecVersionHasMultipleIPs(ver) {
 				errStr := fmt.Sprintf("CNI version %s does not support more than 1 address per family", ver)
 				Expect(err).To(MatchError(errStr))
 				return
 			}
 
 			Expect(err).NotTo(HaveOccurred())
-			if testutils.SpecVersionHasIPVersion(ver) {
+			if over.SpecVersionHasIPVersion(ver) {
 				Expect(strings.Index(string(raw), "\"version\":")).Should(BeNumerically(">", 0))
 			}
 
@@ -275,7 +275,7 @@ var _ = Describe("static Operations", func() {
 			Expect(result.IPs).To(HaveLen(2))
 
 			// Release the IP
-			err = testutils.CmdDelWithArgs(args, func() error {
+			err = over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -316,11 +316,11 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			r, raw, err := testutils.CmdAddWithArgs(args, func() error {
+			r, raw, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
-			if testutils.SpecVersionHasIPVersion(ver) {
+			if over.SpecVersionHasIPVersion(ver) {
 				Expect(strings.Index(string(raw), "\"version\":")).Should(BeNumerically(">", 0))
 			}
 
@@ -344,7 +344,7 @@ var _ = Describe("static Operations", func() {
 			}))
 
 			// Release the IP
-			err = testutils.CmdDelWithArgs(args, func() error {
+			err = over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -386,11 +386,11 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			r, raw, err := testutils.CmdAddWithArgs(args, func() error {
+			r, raw, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
-			if testutils.SpecVersionHasIPVersion(ver) {
+			if over.SpecVersionHasIPVersion(ver) {
 				Expect(strings.Index(string(raw), "\"version\":")).Should(BeNumerically(">", 0))
 			}
 
@@ -414,7 +414,7 @@ var _ = Describe("static Operations", func() {
 			}))
 
 			// Release the IP
-			err = testutils.CmdDelWithArgs(args, func() error {
+			err = over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -461,11 +461,11 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			r, raw, err := testutils.CmdAddWithArgs(args, func() error {
+			r, raw, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
-			if testutils.SpecVersionHasIPVersion(ver) {
+			if over.SpecVersionHasIPVersion(ver) {
 				Expect(strings.Index(string(raw), "\"version\":")).Should(BeNumerically(">", 0))
 			}
 
@@ -489,7 +489,7 @@ var _ = Describe("static Operations", func() {
 			}))
 
 			// Release the IP
-			err = testutils.CmdDelWithArgs(args, func() error {
+			err = over.CmdDelWithArgs(args, func() error {
 				return cmdDel(args)
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -514,7 +514,7 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			_, _, err := testutils.CmdAddWithArgs(args, func() error {
+			_, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).Should(MatchError("IPAM config missing 'ipam' key"))
@@ -541,7 +541,7 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			_, _, err := testutils.CmdAddWithArgs(args, func() error {
+			_, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).Should(MatchError("IPAM config missing 'ipam' key"))
@@ -572,7 +572,7 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			_, _, err := testutils.CmdAddWithArgs(args, func() error {
+			_, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).Should(MatchError(
@@ -603,7 +603,7 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			_, _, err := testutils.CmdAddWithArgs(args, func() error {
+			_, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).Should(MatchError(
@@ -638,7 +638,7 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			_, _, err := testutils.CmdAddWithArgs(args, func() error {
+			_, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).Should(MatchError(
@@ -671,7 +671,7 @@ var _ = Describe("static Operations", func() {
 			}
 
 			// Allocate the IP
-			_, _, err := testutils.CmdAddWithArgs(args, func() error {
+			_, _, err := over.CmdAddWithArgs(args, func() error {
 				return cmdAdd(args)
 			})
 			Expect(err).Should(MatchError(

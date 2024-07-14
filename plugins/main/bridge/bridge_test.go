@@ -17,6 +17,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
+	over2 "github.com/containernetworking/plugins/plugins/ipam/over/host-local/backend/allocator"
 	"net"
 	"os"
 	"strings"
@@ -28,14 +30,13 @@ import (
 	"github.com/vishvananda/netlink"
 	"github.com/vishvananda/netlink/nl"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	types040 "github.com/containernetworking/cni/pkg/types/040"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	types040 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/040"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ip"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
-	"github.com/containernetworking/plugins/plugins/ipam/host-local/backend/allocator"
 )
 
 const (
@@ -46,11 +47,11 @@ const (
 )
 
 type Net struct {
-	Name       string                `json:"name"`
-	CNIVersion string                `json:"cniVersion"`
-	Type       string                `json:"type,omitempty"`
-	BrName     string                `json:"bridge"`
-	IPAM       *allocator.IPAMConfig `json:"ipam"`
+	Name       string            `json:"name"`
+	CNIVersion string            `json:"cniVersion"`
+	Type       string            `json:"type,omitempty"`
+	BrName     string            `json:"bridge"`
+	IPAM       *over2.IPAMConfig `json:"ipam"`
 	// RuntimeConfig struct {    // The capability arg
 	//	IPRanges []RangeSet `json:"ipRanges,omitempty"`
 	// Args *struct {
@@ -526,7 +527,7 @@ func (tester *testerV10x) cmdAddTest(tc testCase, dataDir string) (types.Result,
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		r, raw, err := testutils.CmdAddWithArgs(tester.args, func() error {
+		r, raw, err := over.CmdAddWithArgs(tester.args, func() error {
 			return cmdAdd(tester.args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -756,7 +757,7 @@ func (tester *testerV10x) cmdCheckTest(tc testCase, conf *Net, _ string) {
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		err := testutils.CmdCheckWithArgs(tester.args, func() error {
+		err := over.CmdCheckWithArgs(tester.args, func() error {
 			return cmdCheck(tester.args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -827,7 +828,7 @@ func (tester *testerV10x) cmdDelTest(tc testCase, dataDir string) {
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		err := testutils.CmdDelWithArgs(tester.args, func() error {
+		err := over.CmdDelWithArgs(tester.args, func() error {
 			return cmdDel(tester.args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -867,7 +868,7 @@ func (tester *testerV04x) cmdAddTest(tc testCase, dataDir string) (types.Result,
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		r, raw, err := testutils.CmdAddWithArgs(tester.args, func() error {
+		r, raw, err := over.CmdAddWithArgs(tester.args, func() error {
 			return cmdAdd(tester.args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -1090,7 +1091,7 @@ func (tester *testerV04x) cmdCheckTest(tc testCase, conf *Net, _ string) {
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		err := testutils.CmdCheckWithArgs(tester.args, func() error {
+		err := over.CmdCheckWithArgs(tester.args, func() error {
 			return cmdCheck(tester.args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -1161,7 +1162,7 @@ func (tester *testerV04x) cmdDelTest(tc testCase, dataDir string) {
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		err := testutils.CmdDelWithArgs(tester.args, func() error {
+		err := over.CmdDelWithArgs(tester.args, func() error {
 			return cmdDel(tester.args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -1201,7 +1202,7 @@ func (tester *testerV03x) cmdAddTest(tc testCase, dataDir string) (types.Result,
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		r, raw, err := testutils.CmdAddWithArgs(tester.args, func() error {
+		r, raw, err := over.CmdAddWithArgs(tester.args, func() error {
 			return cmdAdd(tester.args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -1412,7 +1413,7 @@ func (tester *testerV03x) cmdDelTest(_ testCase, _ string) {
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		err := testutils.CmdDelWithArgs(tester.args, func() error {
+		err := over.CmdDelWithArgs(tester.args, func() error {
 			return cmdDel(tester.args)
 		})
 		Expect(err).NotTo(HaveOccurred())
@@ -1469,7 +1470,7 @@ func (tester *testerV01xOr02x) cmdAddTest(tc testCase, dataDir string) (types.Re
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		r, raw, err := testutils.CmdAddWithArgs(tester.args, func() error {
+		r, raw, err := over.CmdAddWithArgs(tester.args, func() error {
 			return cmdAdd(tester.args)
 		})
 
@@ -1648,7 +1649,7 @@ func (tester *testerV01xOr02x) cmdDelTest(tc testCase, _ string) {
 	err := tester.testNS.Do(func(ns.NetNS) error {
 		defer GinkgoRecover()
 
-		err := testutils.CmdDelWithArgs(tester.args, func() error {
+		err := over.CmdDelWithArgs(tester.args, func() error {
 			return cmdDel(tester.args)
 		})
 		switch {
@@ -1746,7 +1747,7 @@ func cmdAddDelCheckTest(origNS, targetNS ns.NetNS, tc testCase, dataDir string) 
 	err = json.Unmarshal([]byte(confString), &conf)
 	Expect(err).NotTo(HaveOccurred())
 
-	conf.IPAM, _, err = allocator.LoadIPAMConfig([]byte(confString), "")
+	conf.IPAM, _, err = over2.LoadIPAMConfig([]byte(confString), "")
 	Expect(err).NotTo(HaveOccurred())
 
 	newConf, err := buildOneConfig("testConfig", tc.cniVersion, conf, prevResult)
@@ -1848,7 +1849,7 @@ var _ = Describe("bridge Operations", func() {
 		Entry("when the maxID is smaller than minID", []*VlanTrunk{{MinID: &incorrectMinID, MaxID: &incorrectMaxID}}, fmt.Errorf("minID is greater than maxID in trunk parameter")),
 	)
 
-	for _, ver := range testutils.AllSpecVersions {
+	for _, ver := range over.AllSpecVersions {
 		// Redefine ver inside for scope so real value is picked up by each dynamically defined It()
 		// See Gingkgo's "Patterns for dynamically generating tests" documentation.
 		ver := ver
@@ -2374,7 +2375,7 @@ var _ = Describe("bridge Operations", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				debugPostIPAMError = fmt.Errorf("debugPostIPAMError")
-				_, _, err = testutils.CmdAddWithArgs(args, func() error {
+				_, _, err = over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).To(MatchError("debugPostIPAMError"))
@@ -2389,7 +2390,7 @@ var _ = Describe("bridge Operations", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		if testutils.SpecVersionHasChaining(ver) {
+		if over.SpecVersionHasChaining(ver) {
 			It(fmt.Sprintf("[%s] configures a bridge and ipMasq rules", ver), func() {
 				err := originalNS.Do(func(ns.NetNS) error {
 					defer GinkgoRecover()
@@ -2402,7 +2403,7 @@ var _ = Describe("bridge Operations", func() {
 					}
 
 					args := tc.createCmdArgs(originalNS, dataDir)
-					r, _, err := testutils.CmdAddWithArgs(args, func() error {
+					r, _, err := over.CmdAddWithArgs(args, func() error {
 						return cmdAdd(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
@@ -2417,7 +2418,7 @@ var _ = Describe("bridge Operations", func() {
 					Expect(err).NotTo(HaveOccurred())
 					Expect(rules).Should(ContainElement(ContainSubstring(result.IPs[0].Address.IP.String())))
 
-					err = testutils.CmdDelWithArgs(args, func() error {
+					err = over.CmdDelWithArgs(args, func() error {
 						return cmdDel(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
@@ -2472,14 +2473,14 @@ var _ = Describe("bridge Operations", func() {
 					macspoofchk: true,
 				}
 				args := tc.createCmdArgs(originalNS, dataDir)
-				_, _, err := testutils.CmdAddWithArgs(args, func() error {
+				_, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
 
 				assertMacSpoofCheckRulesExist()
 
-				Expect(testutils.CmdDelWithArgs(args, func() error {
+				Expect(over.CmdDelWithArgs(args, func() error {
 					if err := cmdDel(args); err != nil {
 						return err
 					}

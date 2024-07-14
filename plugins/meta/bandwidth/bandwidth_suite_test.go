@@ -31,7 +31,7 @@ import (
 	"github.com/onsi/gomega/gexec"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/pkg/types"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
 	"github.com/containernetworking/plugins/pkg/ns"
 )
 

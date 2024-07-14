@@ -21,6 +21,56 @@ import (
 	"github.com/coreos/go-iptables/iptables"
 )
 
+// TeardownIPMasq undoes the effects of SetupIPMasq
+func TeardownIPMasq(ipn *net.IPNet, chain string, comment string) error {
+	isV6 := ipn.IP.To4() == nil
+
+	var ipt *iptables.IPTables
+	var err error
+
+	if isV6 {
+		ipt, err = iptables.NewWithProtocol(iptables.ProtocolIPv6)
+	} else {
+		ipt, err = iptables.NewWithProtocol(iptables.ProtocolIPv4)
+	}
+	if err != nil {
+		return fmt.Errorf("failed to locate iptables: %v", err)
+	}
+
+	err = ipt.Delete("nat", "POSTROUTING", "-s", ipn.IP.String(), "-j", chain, "-m", "comment", "--comment", comment)
+	if err != nil && !isNotExist(err) {
+		return err
+	}
+
+	// for downward compatibility
+	err = ipt.Delete("nat", "POSTROUTING", "-s", ipn.String(), "-j", chain, "-m", "comment", "--comment", comment)
+	if err != nil && !isNotExist(err) {
+		return err
+	}
+
+	err = ipt.ClearChain("nat", chain)
+	if err != nil && !isNotExist(err) {
+		return err
+	}
+
+	err = ipt.DeleteChain("nat", chain)
+	if err != nil && !isNotExist(err) {
+		return err
+	}
+
+	return nil
+}
+
+// isNotExist returnst true if the error is from iptables indicating
+// that the target does not exist.
+func isNotExist(err error) bool {
+	e, ok := err.(*iptables.Error)
+	if !ok {
+		return false
+	}
+	return e.IsNotExist()
+}
+
 // SetupIPMasq installs iptables rules to masquerade traffic
 // coming from ip of ipn and going outside of ipn
 func SetupIPMasq(ipn *net.IPNet, chain string, comment string) error {
@@ -72,54 +122,4 @@ func SetupIPMasq(ipn *net.IPNet, chain string, comment string) error {
 
 	// Packets from the specific IP of this network will hit the chain
 	return ipt.AppendUnique("nat", "POSTROUTING", "-s", ipn.IP.String(), "-j", chain, "-m", "comment", "--comment", comment)
-}
-
-// TeardownIPMasq undoes the effects of SetupIPMasq
-func TeardownIPMasq(ipn *net.IPNet, chain string, comment string) error {
-	isV6 := ipn.IP.To4() == nil
-
-	var ipt *iptables.IPTables
-	var err error
-
-	if isV6 {
-		ipt, err = iptables.NewWithProtocol(iptables.ProtocolIPv6)
-	} else {
-		ipt, err = iptables.NewWithProtocol(iptables.ProtocolIPv4)
-	}
-	if err != nil {
-		return fmt.Errorf("failed to locate iptables: %v", err)
-	}
-
-	err = ipt.Delete("nat", "POSTROUTING", "-s", ipn.IP.String(), "-j", chain, "-m", "comment", "--comment", comment)
-	if err != nil && !isNotExist(err) {
-		return err
-	}
-
-	// for downward compatibility
-	err = ipt.Delete("nat", "POSTROUTING", "-s", ipn.String(), "-j", chain, "-m", "comment", "--comment", comment)
-	if err != nil && !isNotExist(err) {
-		return err
-	}
-
-	err = ipt.ClearChain("nat", chain)
-	if err != nil && !isNotExist(err) {
-		return err
-	}
-
-	err = ipt.DeleteChain("nat", chain)
-	if err != nil && !isNotExist(err) {
-		return err
-	}
-
-	return nil
-}
-
-// isNotExist returnst true if the error is from iptables indicating
-// that the target does not exist.
-func isNotExist(err error) bool {
-	e, ok := err.(*iptables.Error)
-	if !ok {
-		return false
-	}
-	return e.IsNotExist()
 }

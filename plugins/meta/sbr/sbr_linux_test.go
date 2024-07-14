@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"log"
 	"net"
 
@@ -24,7 +25,7 @@ import (
 	"github.com/vishvananda/netlink"
 	"golang.org/x/sys/unix"
 
-	"github.com/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -272,7 +273,7 @@ var _ = Describe("sbr test", func() {
 		oldStatus, err := readback(targetNs, []string{"net1", "eth0"})
 		Expect(err).NotTo(HaveOccurred())
 
-		_, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+		_, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 		Expect(err).NotTo(HaveOccurred())
 
 		newStatus, err := readback(targetNs, []string{"net1", "eth0"})
@@ -316,7 +317,7 @@ var _ = Describe("sbr test", func() {
 			IfName:      ifname,
 			StdinData:   []byte(conf),
 		}
-		err = testutils.CmdDelWithArgs(args, func() error { return cmdDel(args) })
+		err = over.CmdDelWithArgs(args, func() error { return cmdDel(args) })
 		Expect(err).NotTo(HaveOccurred())
 
 		retVal, err := readback(targetNs, []string{"net1", "eth0"})
@@ -376,7 +377,7 @@ var _ = Describe("sbr test", func() {
 		oldStatus, err := readback(targetNs, []string{"net1", "eth0"})
 		Expect(err).NotTo(HaveOccurred())
 
-		_, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+		_, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 		Expect(err).NotTo(HaveOccurred())
 
 		newStatus, err := readback(targetNs, []string{"net1", "eth0"})
@@ -456,7 +457,7 @@ var _ = Describe("sbr test", func() {
 		oldStatus, err := readback(targetNs, []string{"net1", "eth0"})
 		Expect(err).NotTo(HaveOccurred())
 
-		_, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+		_, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 		Expect(err).NotTo(HaveOccurred())
 
 		newStatus, err := readback(targetNs, []string{"net1", "eth0"})
@@ -537,7 +538,7 @@ var _ = Describe("sbr test", func() {
 		err := setup(targetNs, createDefaultStatus())
 		Expect(err).NotTo(HaveOccurred())
 
-		_, _, err = testutils.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
+		_, _, err = over.CmdAddWithArgs(args, func() error { return cmdAdd(args) })
 		Expect(err).To(MatchError("This plugin must be called as chained plugin"))
 	})
 })

@@ -23,7 +23,7 @@ import (
 
 	"github.com/coreos/go-iptables/iptables"
 
-	current "github.com/containernetworking/cni/pkg/types/100"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/utils"
 )
 

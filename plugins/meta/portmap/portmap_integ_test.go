@@ -30,8 +30,8 @@ import (
 	"github.com/onsi/gomega/gexec"
 	"github.com/vishvananda/netlink"
 
-	"github.com/containernetworking/cni/libcni"
-	"github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/libcni"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -116,6 +116,7 @@ var _ = Describe("portmap integration tests", func() {
 						},
 					},
 				}
+
 				configList := makeConfig(ver)
 
 				// Make delete idempotent, so we can clean up on failure
@@ -128,25 +129,65 @@ var _ = Describe("portmap integration tests", func() {
 					return cniConf.DelNetworkList(context.TODO(), configList, &runtimeConfig)
 				}
 
-				// we'll also manually check the iptables chains
+				// 我们还将手动检查iptables链
 				ipt, err := iptables.NewWithProtocol(iptables.ProtocolIPv4)
 				Expect(err).NotTo(HaveOccurred())
-				dnatChainName := genDnatChain("cni-portmap-unit-test", runtimeConfig.ContainerID).name
+				dnatChainName := genDnatChain("cni-portmap-unit-test", runtimeConfig.ContainerID).name // unit-test-6103
 
 				// Create the network
-				resI, err := cniConf.AddNetworkList(context.TODO(), configList, &runtimeConfig)
+				// {
+				//		"cniVersion": "0.3.0",
+				//		"name": "cni-portmap-unit-test",
+				//		"plugins": [
+				//			{
+				//				"type": "ptp",
+				//				"ipMasq": true,
+				//				"ipam": {
+				//					"type": "host-local",
+				//					"subnet": "172.16.31.0/24",
+				//					"routes": [
+				//						{"dst": "0.0.0.0/0"}
+				//					]
+				//				}
+				//			},
+				//			{
+				//				"type": "portmap",
+				//				"capabilities": {
+				//					"portMappings": true
+				//				}
+				//			}
+				//		]
+				//	}
+
+				// {
+				//    "ContainerID": "unit-test-1860",
+				//    "NetNS": "/var/run/netns/cnitest-7004e41f-ea74-1568-8523-7fd67caf1509",
+				//    "IfName": "eth0",
+				//    "Args": null,
+				//    "CapabilityArgs": {
+				//        "portMappings": [
+				//            {
+				//                "containerPort": 39547,
+				//                "hostPort": 1860,
+				//                "protocol": "tcp"
+				//            }
+				//        ]
+				//    },
+				//    "CacheDir": ""
+				//}
+
+				resI, err := cniConf.AddNetworkList(context.TODO(), configList, &runtimeConfig) // ptp portmap
 				Expect(err).NotTo(HaveOccurred())
 				defer deleteNetwork()
 
 				// Undo Docker's forwarding policy
-				cmd := exec.Command("iptables", "-t", "filter",
-					"-P", "FORWARD", "ACCEPT")
+				cmd := exec.Command("iptables", "-t", "filter", "-P", "FORWARD", "ACCEPT")
 				cmd.Stderr = GinkgoWriter
 				err = cmd.Run()
 				Expect(err).NotTo(HaveOccurred())
 
 				// Check the chain exists
-				_, err = ipt.List("nat", dnatChainName)
+				_, err = ipt.List("nat", dnatChainName) // unit-test-6103
 				Expect(err).NotTo(HaveOccurred())
 
 				result, err := types100.GetResult(resI)

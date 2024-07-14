@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"os"
 
-	current "github.com/containernetworking/cni/pkg/types/100"
+	current "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 )
 
 func EnableIP4Forward() error {

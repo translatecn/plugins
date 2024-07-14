@@ -17,6 +17,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/testutils/over"
 	"net"
 	"os"
 	"path/filepath"
@@ -26,9 +27,9 @@ import (
 	"github.com/vishvananda/netlink"
 	"golang.org/x/sys/unix"
 
-	"github.com/containernetworking/cni/pkg/skel"
-	"github.com/containernetworking/cni/pkg/types"
-	types100 "github.com/containernetworking/cni/pkg/types/100"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/skel"
+	"github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types"
+	types100 "github.com/containernetworking/plugins/3rd/containernetworking/cni/pkg/types/100"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/containernetworking/plugins/pkg/testutils"
 )
@@ -181,7 +182,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -196,7 +197,7 @@ var _ = Describe("tuning plugin", func() {
 
 				Expect("/tmp/tuning-test/dummy_dummy0.json").ShouldNot(BeAnExistingFile())
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -236,7 +237,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -253,7 +254,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().Promisc).To(Equal(1))
 
-				if testutils.SpecVersionHasCHECK(ver) {
+				if over.SpecVersionHasCHECK(ver) {
 					n := &TuningConf{}
 					err = json.Unmarshal(conf, &n)
 					Expect(err).NotTo(HaveOccurred())
@@ -263,13 +264,13 @@ var _ = Describe("tuning plugin", func() {
 
 					args.StdinData = confString
 
-					err = testutils.CmdCheckWithArgs(args, func() error {
+					err = over.CmdCheckWithArgs(args, func() error {
 						return cmdCheck(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
 				}
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -317,7 +318,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -334,7 +335,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().Promisc).To(Equal(1))
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -378,7 +379,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -395,7 +396,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().MTU).To(Equal(1454))
 
-				if testutils.SpecVersionHasCHECK(ver) {
+				if over.SpecVersionHasCHECK(ver) {
 					n := &TuningConf{}
 					err = json.Unmarshal(conf, &n)
 					Expect(err).NotTo(HaveOccurred())
@@ -405,13 +406,13 @@ var _ = Describe("tuning plugin", func() {
 
 					args.StdinData = confString
 
-					err = testutils.CmdCheckWithArgs(args, func() error {
+					err = over.CmdCheckWithArgs(args, func() error {
 						return cmdCheck(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
 				}
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -459,7 +460,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -476,7 +477,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().MTU).To(Equal(1454))
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -520,7 +521,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -529,7 +530,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().TxQLen).To(Equal(20000))
 
-				if testutils.SpecVersionHasCHECK(ver) {
+				if over.SpecVersionHasCHECK(ver) {
 					n := &TuningConf{}
 					Expect(json.Unmarshal(conf, &n)).NotTo(HaveOccurred())
 
@@ -538,12 +539,12 @@ var _ = Describe("tuning plugin", func() {
 
 					args.StdinData = confString
 
-					Expect(testutils.CmdCheckWithArgs(args, func() error {
+					Expect(over.CmdCheckWithArgs(args, func() error {
 						return cmdCheck(args)
 					})).NotTo(HaveOccurred())
 				}
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -591,7 +592,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -608,7 +609,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().TxQLen).To(Equal(20000))
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -653,7 +654,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -673,7 +674,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().HardwareAddr).To(Equal(hw))
 
-				if testutils.SpecVersionHasCHECK(ver) {
+				if over.SpecVersionHasCHECK(ver) {
 					n := &TuningConf{}
 					err = json.Unmarshal(conf, &n)
 					Expect(err).NotTo(HaveOccurred())
@@ -683,13 +684,13 @@ var _ = Describe("tuning plugin", func() {
 
 					args.StdinData = confString
 
-					err = testutils.CmdCheckWithArgs(args, func() error {
+					err = over.CmdCheckWithArgs(args, func() error {
 						return cmdCheck(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
 				}
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -737,7 +738,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -756,7 +757,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().HardwareAddr).To(Equal(hw))
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -800,7 +801,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -819,7 +820,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().HardwareAddr).To(Equal(hw))
 
-				if testutils.SpecVersionHasCHECK(ver) {
+				if over.SpecVersionHasCHECK(ver) {
 					n := &TuningConf{}
 					err = json.Unmarshal(conf, &n)
 					Expect(err).NotTo(HaveOccurred())
@@ -829,13 +830,13 @@ var _ = Describe("tuning plugin", func() {
 
 					args.StdinData = confString
 
-					err = testutils.CmdCheckWithArgs(args, func() error {
+					err = over.CmdCheckWithArgs(args, func() error {
 						return cmdCheck(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
 				}
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -882,7 +883,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -901,7 +902,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().HardwareAddr).To(Equal(hw))
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -949,7 +950,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -973,7 +974,7 @@ var _ = Describe("tuning plugin", func() {
 
 				Expect("/tmp/tuning-test/dummy_dummy0.json").Should(BeAnExistingFile())
 
-				if testutils.SpecVersionHasCHECK(ver) {
+				if over.SpecVersionHasCHECK(ver) {
 					n := &TuningConf{}
 					err = json.Unmarshal(conf, &n)
 					Expect(err).NotTo(HaveOccurred())
@@ -983,13 +984,13 @@ var _ = Describe("tuning plugin", func() {
 
 					args.StdinData = confString
 
-					err = testutils.CmdCheckWithArgs(args, func() error {
+					err = over.CmdCheckWithArgs(args, func() error {
 						return cmdCheck(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
 				}
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -1036,7 +1037,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -1053,7 +1054,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().RawFlags & unix.IFF_ALLMULTI).NotTo(BeZero())
 
-				if testutils.SpecVersionHasCHECK(ver) {
+				if over.SpecVersionHasCHECK(ver) {
 					n := &TuningConf{}
 					err = json.Unmarshal(conf, &n)
 					Expect(err).NotTo(HaveOccurred())
@@ -1063,13 +1064,13 @@ var _ = Describe("tuning plugin", func() {
 
 					args.StdinData = confString
 
-					err = testutils.CmdCheckWithArgs(args, func() error {
+					err = over.CmdCheckWithArgs(args, func() error {
 						return cmdCheck(args)
 					})
 					Expect(err).NotTo(HaveOccurred())
 				}
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -1117,7 +1118,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -1134,7 +1135,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(link.Attrs().RawFlags & unix.IFF_ALLMULTI).NotTo(BeZero())
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -1185,12 +1186,12 @@ var _ = Describe("tuning plugin", func() {
 			err = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				_, _, err := testutils.CmdAddWithArgs(args, func() error {
+				_, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).To(HaveOccurred())
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -1237,7 +1238,7 @@ var _ = Describe("tuning plugin", func() {
 			err = originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				r, _, err := testutils.CmdAddWithArgs(args, func() error {
+				r, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).NotTo(HaveOccurred())
@@ -1250,7 +1251,7 @@ var _ = Describe("tuning plugin", func() {
 				Expect(result.IPs).To(HaveLen(1))
 				Expect(result.IPs[0].Address.String()).To(Equal("10.0.0.2/24"))
 
-				err = testutils.CmdDel(originalNS.Path(),
+				err = over.CmdDel(originalNS.Path(),
 					args.ContainerID, "", func() error { return cmdDel(args) })
 				Expect(err).NotTo(HaveOccurred())
 
@@ -1295,7 +1296,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				_, _, err := testutils.CmdAddWithArgs(args, func() error {
+				_, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).To(HaveOccurred())
@@ -1341,7 +1342,7 @@ var _ = Describe("tuning plugin", func() {
 			err := originalNS.Do(func(ns.NetNS) error {
 				defer GinkgoRecover()
 
-				_, _, err := testutils.CmdAddWithArgs(args, func() error {
+				_, _, err := over.CmdAddWithArgs(args, func() error {
 					return cmdAdd(args)
 				})
 				Expect(err).To(HaveOccurred())
