@@ -43,7 +43,7 @@ func parseNetConf(bytes []byte) (*types.NetConf, error) {
 func createDummy(ifName string, netns ns.NetNS) (*current.Interface, error) {
 	dummy := &current.Interface{}
 
-	dm := &netlink.Dummy{
+	dm := &netlink.Dummy{ // 只在容器内创建设备
 		LinkAttrs: netlink.LinkAttrs{
 			Name:      ifName,
 			Namespace: netlink.NsFd(int(netns.Fd())),

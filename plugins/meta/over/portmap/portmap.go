@@ -172,51 +172,6 @@ func genToplevelDnatChain() chain {
 	}
 }
 
-// genSetMarkChain creates the SETMARK chain - the chain that sets the
-// "to-be-masqueraded" mark and returns.
-// Chains are idempotent, so we'll always create this.
-func genSetMarkChain(markBit int) chain {
-	markValue := 1 << uint(markBit)
-	markDef := fmt.Sprintf("%#x/%#x", markValue, markValue)
-	ch := chain{
-		table: "nat",
-		name:  SetMarkChainName,
-		rules: [][]string{{
-			"-m", "comment",
-			"--comment", "CNI portfwd masquerade mark",
-			"-j", "MARK",
-			"--set-xmark", markDef,
-		}},
-	}
-	return ch
-}
-
-// genMarkMasqChain creates the chain that masquerades all packets marked
-// in the SETMARK chain
-func genMarkMasqChain(markBit int) chain {
-	markValue := 1 << uint(markBit)
-	markDef := fmt.Sprintf("%#x/%#x", markValue, markValue)
-	ch := chain{
-		table:       "nat",
-		name:        MarkMasqChainName,
-		entryChains: []string{"POSTROUTING"},
-		// Only this entry chain needs to be prepended, because otherwise it is
-		// stomped on by the masquerading rules created by the CNI ptp and bridge
-		// plugins.
-		prependEntry: true,
-		entryRules: [][]string{{
-			"-m", "comment",
-			"--comment", "CNI portfwd requiring masquerade",
-		}},
-		rules: [][]string{{
-			"-m", "mark",
-			"--mark", markDef,
-			"-j", "MASQUERADE",
-		}},
-	}
-	return ch
-}
-
 // enableLocalnetRouting tells the kernel not to treat 127/8 as a martian,
 // so that connections with a source ip of 127/8 can cross a routing boundary.
 func enableLocalnetRouting(ifName string) error {
@@ -438,4 +393,49 @@ func fillDnatRules(c *chain, config *PortMapConf, containerNet net.IPNet) {
 		)
 		c.rules = append(c.rules, dnatRule)
 	}
+}
+
+// genSetMarkChain creates the SETMARK chain - the chain that sets the
+// "to-be-masqueraded" mark and returns.
+// Chains are idempotent, so we'll always create this.
+func genSetMarkChain(markBit int) chain {
+	markValue := 1 << uint(markBit)
+	markDef := fmt.Sprintf("%#x/%#x", markValue, markValue)
+	ch := chain{
+		table: "nat",
+		name:  SetMarkChainName,
+		rules: [][]string{{
+			"-m", "comment",
+			"--comment", "CNI portfwd masquerade mark",
+			"-j", "MARK",
+			"--set-xmark", markDef,
+		}},
+	}
+	return ch
+}
+
+// genMarkMasqChain creates the chain that masquerades all packets marked
+// in the SETMARK chain
+func genMarkMasqChain(markBit int) chain {
+	markValue := 1 << uint(markBit)
+	markDef := fmt.Sprintf("%#x/%#x", markValue, markValue)
+	ch := chain{
+		table:       "nat",
+		name:        MarkMasqChainName,
+		entryChains: []string{"POSTROUTING"},
+		// Only this entry chain needs to be prepended, because otherwise it is
+		// stomped on by the masquerading rules created by the CNI ptp and bridge
+		// plugins.
+		prependEntry: true,
+		entryRules: [][]string{{
+			"-m", "comment",
+			"--comment", "CNI portfwd requiring masquerade",
+		}},
+		rules: [][]string{{
+			"-m", "mark",
+			"--mark", markDef,
+			"-j", "MASQUERADE",
+		}},
+	}
+	return ch
 }
