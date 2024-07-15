@@ -172,123 +172,6 @@ func genToplevelDnatChain() chain {
 	}
 }
 
-// dnatRules generates the destination NAT rules, one per port, to direct
-// traffic from hostip:hostport to podip:podport
-func fillDnatRules(c *chain, config *PortMapConf, containerNet net.IPNet) {
-	isV6 := (containerNet.IP.To4() == nil)
-	comment := trimComment(fmt.Sprintf(`dnat name: "%s" id: "%s"`, config.Name, config.ContainerID))
-	entries := config.RuntimeConfig.PortMaps
-	setMarkChainName := SetMarkChainName
-	if config.ExternalSetMarkChain != nil {
-		setMarkChainName = *config.ExternalSetMarkChain
-	}
-
-	// Generate the dnat entry rules. We'll use multiport, but it ony accepts
-	// up to 15 rules, so partition the list if needed.
-	// Do it in a stable order for testing
-	protoPorts := groupByProto(entries)
-	protos := []string{}
-	for proto := range protoPorts {
-		protos = append(protos, proto)
-	}
-	sort.Strings(protos)
-	for _, proto := range protos {
-		for _, portSpec := range splitPortList(protoPorts[proto]) {
-			r := []string{
-				"-m", "comment",
-				"--comment", comment,
-				"-m", "multiport",
-				"-p", proto,
-				"--destination-ports", portSpec,
-			}
-
-			if isV6 && config.ConditionsV6 != nil && len(*config.ConditionsV6) > 0 {
-				r = append(r, *config.ConditionsV6...)
-			} else if !isV6 && config.ConditionsV4 != nil && len(*config.ConditionsV4) > 0 {
-				r = append(r, *config.ConditionsV4...)
-			}
-			c.entryRules = append(c.entryRules, r)
-		}
-	}
-
-	// For every entry, generate 3 rules:
-	// - mark hairpin for masq
-	// - mark localhost for masq (for v4)
-	// - do dnat
-	// the ordering is important here; the mark rules must be first.
-	c.rules = make([][]string, 0, 3*len(entries))
-	for _, entry := range entries {
-		// If a HostIP is given, only process the entry if host and container address families match
-		// and append it to the iptables rules
-		addRuleBaseDst := false
-		if entry.HostIP != "" {
-			hostIP := net.ParseIP(entry.HostIP)
-			isHostV6 := (hostIP.To4() == nil)
-
-			if isV6 != isHostV6 {
-				continue
-			}
-
-			// Unspecified addresses can not be used as destination
-			if !hostIP.IsUnspecified() {
-				addRuleBaseDst = true
-			}
-		}
-
-		ruleBase := []string{
-			"-p", entry.Protocol,
-			"--dport", strconv.Itoa(entry.HostPort),
-		}
-		if addRuleBaseDst {
-			ruleBase = append(ruleBase,
-				"-d", entry.HostIP)
-		}
-
-		// Add mark-to-masquerade rules for hairpin and localhost
-		if *config.SNAT {
-			// hairpin
-			hpRule := make([]string, len(ruleBase), len(ruleBase)+4)
-			copy(hpRule, ruleBase)
-
-			masqCIDR := containerNet.String()
-			if config.MasqAll {
-				if isV6 {
-					masqCIDR = "::/0"
-				} else {
-					masqCIDR = "0.0.0.0/0"
-				}
-			}
-
-			hpRule = append(hpRule,
-				"-s", masqCIDR,
-				"-j", setMarkChainName,
-			)
-			c.rules = append(c.rules, hpRule)
-
-			if !isV6 && !config.MasqAll {
-				// localhost
-				localRule := make([]string, len(ruleBase), len(ruleBase)+4)
-				copy(localRule, ruleBase)
-
-				localRule = append(localRule,
-					"-s", "127.0.0.1",
-					"-j", setMarkChainName,
-				)
-				c.rules = append(c.rules, localRule)
-			}
-		}
-
-		// The actual dnat rule
-		dnatRule := make([]string, len(ruleBase), len(ruleBase)+4)
-		copy(dnatRule, ruleBase)
-		dnatRule = append(dnatRule,
-			"-j", "DNAT",
-			"--to-destination", fmtIPPort(containerNet.IP, entry.ContainerPort),
-		)
-		c.rules = append(c.rules, dnatRule)
-	}
-}
-
 // genSetMarkChain creates the SETMARK chain - the chain that sets the
 // "to-be-masqueraded" mark and returns.
 // Chains are idempotent, so we'll always create this.
@@ -437,5 +320,122 @@ func genDnatChain(netName, containerID string) chain {
 		table:       "nat",
 		name:        utils.MustFormatChainNameWithPrefix(netName, containerID, "DN-"), // cni-portmap-unit-test    unit-test-6103
 		entryChains: []string{TopLevelDNATChainName},                                  // CNI-HOSTPORT-DNAT
+	}
+}
+
+// dnatRules generates the destination NAT rules, one per port, to direct
+// traffic from hostip:hostport to podip:podport
+func fillDnatRules(c *chain, config *PortMapConf, containerNet net.IPNet) {
+	isV6 := (containerNet.IP.To4() == nil)
+	comment := trimComment(fmt.Sprintf(`dnat name: "%s" id: "%s"`, config.Name, config.ContainerID))
+	entries := config.RuntimeConfig.PortMaps
+	setMarkChainName := SetMarkChainName
+	if config.ExternalSetMarkChain != nil {
+		setMarkChainName = *config.ExternalSetMarkChain
+	}
+
+	// Generate the dnat entry rules. We'll use multiport, but it ony accepts
+	// up to 15 rules, so partition the list if needed.
+	// Do it in a stable order for testing
+	protoPorts := groupByProto(entries)
+	protos := []string{}
+	for proto := range protoPorts {
+		protos = append(protos, proto)
+	}
+	sort.Strings(protos)
+	for _, proto := range protos {
+		for _, portSpec := range splitPortList(protoPorts[proto]) {
+			r := []string{
+				"-m", "comment",
+				"--comment", comment,
+				"-m", "multiport",
+				"-p", proto,
+				"--destination-ports", portSpec,
+			}
+
+			if isV6 && config.ConditionsV6 != nil && len(*config.ConditionsV6) > 0 {
+				r = append(r, *config.ConditionsV6...)
+			} else if !isV6 && config.ConditionsV4 != nil && len(*config.ConditionsV4) > 0 {
+				r = append(r, *config.ConditionsV4...)
+			}
+			c.entryRules = append(c.entryRules, r)
+		}
+	}
+
+	// For every entry, generate 3 rules:
+	// - mark hairpin for masq
+	// - mark localhost for masq (for v4)
+	// - do dnat
+	// the ordering is important here; the mark rules must be first.
+	c.rules = make([][]string, 0, 3*len(entries))
+	for _, entry := range entries {
+		// If a HostIP is given, only process the entry if host and container address families match
+		// and append it to the iptables rules
+		addRuleBaseDst := false
+		if entry.HostIP != "" {
+			hostIP := net.ParseIP(entry.HostIP)
+			isHostV6 := (hostIP.To4() == nil)
+
+			if isV6 != isHostV6 {
+				continue
+			}
+
+			// Unspecified addresses can not be used as destination
+			if !hostIP.IsUnspecified() {
+				addRuleBaseDst = true
+			}
+		}
+
+		ruleBase := []string{
+			"-p", entry.Protocol,
+			"--dport", strconv.Itoa(entry.HostPort),
+		}
+		if addRuleBaseDst {
+			ruleBase = append(ruleBase,
+				"-d", entry.HostIP)
+		}
+
+		// Add mark-to-masquerade rules for hairpin and localhost
+		if *config.SNAT {
+			// hairpin
+			hpRule := make([]string, len(ruleBase), len(ruleBase)+4)
+			copy(hpRule, ruleBase)
+
+			masqCIDR := containerNet.String()
+			if config.MasqAll {
+				if isV6 {
+					masqCIDR = "::/0"
+				} else {
+					masqCIDR = "0.0.0.0/0"
+				}
+			}
+
+			hpRule = append(hpRule,
+				"-s", masqCIDR,
+				"-j", setMarkChainName,
+			)
+			c.rules = append(c.rules, hpRule)
+
+			if !isV6 && !config.MasqAll {
+				// localhost
+				localRule := make([]string, len(ruleBase), len(ruleBase)+4)
+				copy(localRule, ruleBase)
+
+				localRule = append(localRule,
+					"-s", "127.0.0.1",
+					"-j", setMarkChainName,
+				)
+				c.rules = append(c.rules, localRule)
+			}
+		}
+
+		// The actual dnat rule
+		dnatRule := make([]string, len(ruleBase), len(ruleBase)+4)
+		copy(dnatRule, ruleBase)
+		dnatRule = append(dnatRule,
+			"-j", "DNAT",
+			"--to-destination", fmtIPPort(containerNet.IP, entry.ContainerPort),
+		)
+		c.rules = append(c.rules, dnatRule)
 	}
 }

@@ -92,8 +92,7 @@ var _ = Describe("chain tests", func() {
 		tlChainName := testChain.entryChains[0]
 
 		// add an extra rule to the test chain to make sure it's not touched
-		err := ipt.Append(TABLE, tlChainName, "-m", "comment", "--comment",
-			"canary value", "-j", "ACCEPT")
+		err := ipt.Append(TABLE, tlChainName, "-m", "comment", "--comment", "canary value", "-j", "ACCEPT")
 		Expect(err).NotTo(HaveOccurred())
 
 		// Create the chain

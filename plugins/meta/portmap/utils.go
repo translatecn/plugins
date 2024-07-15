@@ -16,21 +16,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/vishvananda/netlink"
 	"net"
 	"strconv"
 	"strings"
-
-	"github.com/vishvananda/netlink"
 )
-
-// fmtIpPort correctly formats ip:port literals for iptables and ip6tables -
-// need to wrap v6 literals in a []
-func fmtIPPort(ip net.IP, port int) string {
-	if ip.To4() == nil {
-		return fmt.Sprintf("[%s]:%d", ip.String(), port)
-	}
-	return fmt.Sprintf("%s:%d", ip.String(), port)
-}
 
 // getRoutableHostIF will try and determine which interface routes the container's
 // traffic. This is the one on which we disable martian filtering.
@@ -50,6 +40,15 @@ func getRoutableHostIF(containerIP net.IP) string {
 	}
 
 	return ""
+}
+
+// trimComment makes sure no comment is over the iptables limit of 255 chars
+func trimComment(val string) string {
+	if len(val) <= 255 {
+		return val
+	}
+
+	return val[0:253] + "..."
 }
 
 // groupByProto groups port numbers by protocol
@@ -91,11 +90,11 @@ func splitPortList(l []int) []string {
 	return out
 }
 
-// trimComment makes sure no comment is over the iptables limit of 255 chars
-func trimComment(val string) string {
-	if len(val) <= 255 {
-		return val
+// fmtIpPort correctly formats ip:port literals for iptables and ip6tables -
+// need to wrap v6 literals in a []
+func fmtIPPort(ip net.IP, port int) string {
+	if ip.To4() == nil {
+		return fmt.Sprintf("[%s]:%d", ip.String(), port)
 	}
-
-	return val[0:253] + "..."
+	return fmt.Sprintf("%s:%d", ip.String(), port)
 }

@@ -57,8 +57,9 @@ portmap 依赖 ptp
 
 
 
-iptables 重置
+# iptables 重置 
 ```
+cd /var/run/netns/
 sudo iptables -F
 sudo iptables -X
 sudo iptables -t nat -F
@@ -68,7 +69,13 @@ sudo iptables -t mangle -X
 sudo iptables -P INPUT ACCEPT
 sudo iptables -P FORWARD ACCEPT
 sudo iptables -P OUTPUT ACCEPT
+ 
+ls | xargs -I F umount F 
+ls | xargs -I F rm -rf F 
+```
 
+# ptp
+```
 iptables -t nat -S
 iptables -t nat -N CNI-1b29d9511ed2bb3134d925d5
 
@@ -78,15 +85,12 @@ iptables -t nat -A CNI-1b29d9511ed2bb3134d925d5 -d 10.1.2.2/24 -j ACCEPT -m comm
 iptables -t nat -C CNI-1b29d9511ed2bb3134d925d5 ! -d 224.0.0.0/4 -j MASQUERADE -m comment --comment 'name: "mynet" id:"dummy"'
 iptables -t nat -A CNI-1b29d9511ed2bb3134d925d5 ! -d 224.0.0.0/4 -j MASQUERADE -m comment --comment 'name: "mynet" id:"dummy"'
 
+
+# 在数据包离开本地主机后，对数据包进行操作，如nat，mangle等。
+# 针对源地址为 10.1.2.2 的数据包进行MASQUERADE操作，将源地址替换为本地主机的公网IP地址，从而实现内网主机访问互联网。
 iptables -t nat -C POSTROUTING -s 10.1.2.2 -j CNI-1b29d9511ed2bb3134d925d5 -m comment --comment 'name: "mynet" id:"dummy"'
 iptables -t nat -A POSTROUTING -s 10.1.2.2 -j CNI-1b29d9511ed2bb3134d925d5 -m comment --comment 'name: "mynet" id:"dummy"'
-
-
-
-
 ```
-
-
 
 
 
